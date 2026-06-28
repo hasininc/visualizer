@@ -38,7 +38,7 @@ export const LinkedListWorkspace: React.FC<LinkedListWorkspaceProps> = ({
           </div>
 
           {/* Figma Auto-Layout Linked List Row */}
-          <div className="w-full bg-[#a28ceb]/10 rounded-3xl border border-[#a38deb] p-8 flex items-center justify-center min-h-[160px]">
+          <div className="w-full bg-[#e3dcf7]/30 rounded-3xl border border-[#a38deb]/50 p-8 flex items-center justify-center min-h-[160px] shadow-inner">
             <Reorder.Group
               axis="x"
               values={elements}

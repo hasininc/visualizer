@@ -37,6 +37,13 @@ html, body, #root {
     linear-gradient(to bottom, #9e85eb 1px, transparent 1px);
 }
 
+.bg-canvas-grid-pattern {
+  background-size: 30px 30px;
+  background-image: 
+    linear-gradient(to right, rgba(163, 141, 235, 0.15) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(163, 141, 235, 0.15) 1px, transparent 1px);
+}
+
 .glass-panel {
   background: #bdabfc;
   border: 1px solid #a38deb;

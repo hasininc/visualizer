@@ -129,7 +129,7 @@ export const TreeWorkspace: React.FC<TreeWorkspaceProps> = ({
 
       <div
         ref={canvasRef}
-        className="w-full h-[320px] bg-[#a28ceb]/10 rounded-3xl border border-[#a38deb] relative overflow-hidden flex items-center justify-center"
+        className="w-full h-[320px] bg-[#e3dcf7]/30 rounded-3xl border border-[#a38deb]/50 relative overflow-hidden flex items-center justify-center shadow-inner"
       >
         {/* SVG Links Overlay */}
         <svg className="absolute inset-0 w-full h-full pointer-events-none z-0">

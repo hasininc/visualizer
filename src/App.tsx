@@ -425,9 +425,9 @@ function App() {
 
         {/* Right Sandbox Workspace Canvas */}
         <div className="flex-1 flex flex-col">
-          <Card className="flex-1 border-[#a38deb] relative overflow-hidden flex flex-col justify-between min-h-[460px] p-8">
+          <Card className="flex-1 bg-gradient-to-br from-[#e8e2fa] to-[#f7f5fd] border-[#a38deb] relative overflow-hidden flex flex-col justify-between min-h-[460px] p-8 shadow-sm">
             {/* Visual Grid background details */}
-            <div className="absolute inset-0 bg-grid-pattern opacity-100 pointer-events-none" />
+            <div className="absolute inset-0 bg-canvas-grid-pattern opacity-100 pointer-events-none" />
             
             {/* Header info bar */}
             <div className="flex justify-between items-center border-b border-[#a38deb]/60 pb-3 relative z-10">

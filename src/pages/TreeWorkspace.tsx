@@ -1,5 +1,6 @@
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { NodeCard } from '../components/NodeCard';
 
 interface DSNode {
   id: string;
@@ -14,6 +15,7 @@ interface TreeWorkspaceProps {
   setElements: React.Dispatch<React.SetStateAction<DSNode[]>>;
   selectedId: string | null;
   onSelectNode: (id: string | null) => void;
+  onEditValue?: (id: string, newValue: string) => void;
 }
 
 export const TreeWorkspace: React.FC<TreeWorkspaceProps> = ({
@@ -21,6 +23,7 @@ export const TreeWorkspace: React.FC<TreeWorkspaceProps> = ({
   setElements,
   selectedId,
   onSelectNode,
+  onEditValue,
 }) => {
   const canvasRef = useRef<HTMLDivElement>(null);
 
@@ -39,7 +42,52 @@ export const TreeWorkspace: React.FC<TreeWorkspaceProps> = ({
     );
   };
 
-  // Custom vector drawing for links between parent and child circles
+  const autoLayoutTree = () => {
+    if (elements.length === 0) return;
+    const root = elements.find((n) => !n.parentId);
+    if (!root) return;
+
+    const positions = new Map<string, { x: number; y: number }>();
+    const canvasWidth = 480;
+    const levelHeight = 70;
+
+    const traverse = (nodeId: string, depth: number, leftBound: number, rightBound: number) => {
+      const node = elements.find((n) => n.id === nodeId);
+      if (!node) return;
+
+      const x = (leftBound + rightBound) / 2;
+      const y = 50 + depth * levelHeight;
+      positions.set(nodeId, { x, y });
+
+      const children = elements.filter((n) => n.parentId === nodeId);
+      if (children.length === 0) return;
+
+      const segmentWidth = (rightBound - leftBound) / children.length;
+      children.forEach((child, idx) => {
+        const childLeft = leftBound + idx * segmentWidth;
+        const childRight = childLeft + segmentWidth;
+        traverse(child.id, depth + 1, childLeft, childRight);
+      });
+    };
+
+    traverse(root.id, 0, 40, canvasWidth - 40);
+
+    setElements((prev) =>
+      prev.map((el) => {
+        const pos = positions.get(el.id);
+        if (pos) {
+          return { ...el, x: pos.x, y: pos.y };
+        }
+        return el;
+      })
+    );
+  };
+
+  // Run layout once elements list size changes (Add or Delete events)
+  useEffect(() => {
+    autoLayoutTree();
+  }, [elements.length]);
+
   const renderLink = (child: DSNode) => {
     if (!child.parentId) return null;
     const parent = elements.find((n) => n.id === child.parentId);
@@ -50,7 +98,7 @@ export const TreeWorkspace: React.FC<TreeWorkspaceProps> = ({
     const dy = child.y - parent.y;
     const dist = Math.sqrt(dx * dx + dy * dy);
 
-    if (dist < r * 2.2) return null; // Hide if too close to avoid jitter
+    if (dist < r * 2.2) return null;
 
     const angle = Math.atan2(dy, dx);
     const x1 = parent.x + r * Math.cos(angle);
@@ -67,7 +115,7 @@ export const TreeWorkspace: React.FC<TreeWorkspaceProps> = ({
         y2={y2}
         stroke="#b19ffb"
         strokeWidth="2.5"
-        strokeDasharray="4 4" // Dashed links look super cute and educational
+        strokeDasharray="4 4"
         strokeLinecap="round"
       />
     );
@@ -75,9 +123,8 @@ export const TreeWorkspace: React.FC<TreeWorkspaceProps> = ({
 
   return (
     <div className="flex flex-col items-center w-full h-full relative p-4 gap-4 select-none">
-      {/* Instructions header */}
       <div className="text-center text-[10px] text-purple-400 font-black tracking-widest uppercase z-10 px-6">
-        Select a node in the tree to attach children. Drag nodes freely to customize layout!
+        Auto-spaces parent & children • Drag freely • Double-click to edit
       </div>
 
       <div
@@ -94,7 +141,6 @@ export const TreeWorkspace: React.FC<TreeWorkspaceProps> = ({
             Tree empty. Add root node in the left panel!
           </div>
         ) : (
-          /* Render Nodes absolutely */
           elements.map((el) => {
             const isSelected = selectedId === el.id;
             const isRoot = !el.parentId;
@@ -107,27 +153,31 @@ export const TreeWorkspace: React.FC<TreeWorkspaceProps> = ({
                 dragElastic={0.05}
                 dragMomentum={false}
                 onDrag={(_, info) => handleDrag(el.id, info)}
-                onClick={() => onSelectNode(isSelected ? null : el.id)}
-                whileHover={{ scale: 1.05 }}
-                whileDrag={{ scale: 1.1 }}
+                animate={{
+                  x: el.x - 20, // Center coordinate on (x, y)
+                  y: el.y - 20,
+                }}
+                transition={{ type: 'spring', stiffness: 280, damping: 25 }}
                 style={{
                   position: 'absolute',
-                  left: el.x - 20, // Center coordinate on (x, y)
-                  top: el.y - 20,
+                  left: 0,
+                  top: 0,
                 }}
-                className={`
-                  w-10 h-10 rounded-full border-2 flex flex-col items-center justify-center cursor-grab active:cursor-grabbing font-bold text-xs font-display z-10 transition-shadow duration-150
-                  ${
-                    isSelected
-                      ? 'bg-gradient-to-tr from-purple-200 to-indigo-200 border-purple-400 text-purple-950 shadow-md shadow-purple-500/10 active-glow'
-                      : isRoot
-                      ? 'bg-white border-indigo-300 text-indigo-800 shadow-sm'
-                      : 'bg-white border-purple-200 text-purple-800 shadow-sm'
-                  }
-                `}
+                className="z-10"
               >
-                <span>{el.value}</span>
-                <span className="text-[6px] text-purple-400 font-mono -mt-0.5 uppercase tracking-tighter">
+                {/* Reusable Double-click Node Card */}
+                <NodeCard
+                  id={el.id}
+                  value={el.value}
+                  isSelected={isSelected}
+                  onSelect={() => onSelectNode(isSelected ? null : el.id)}
+                  onEditValue={(newVal) => onEditValue?.(el.id, newVal)}
+                  size="sm"
+                  className="rounded-full"
+                />
+                
+                {/* Small indicator tag */}
+                <span className="text-[6px] text-purple-400 font-mono absolute -bottom-3 left-1/2 -translate-x-1/2 uppercase tracking-tighter select-none font-bold">
                   {isRoot ? 'Root' : isSelected ? 'Sel' : ''}
                 </span>
               </motion.div>

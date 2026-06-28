@@ -214,6 +214,17 @@ function App() {
     setInputValue('');
   };
 
+  const handleEditNodeValue = (id: string, newValue: string) => {
+    setElements((prev) =>
+      prev.map((el) => {
+        if (el.id === id) {
+          return { ...el, value: newValue };
+        }
+        return el;
+      })
+    );
+  };
+
   const renderActiveWorkspace = () => {
     switch (activeDS) {
       case 'array':
@@ -223,22 +234,27 @@ function App() {
             setElements={setElements}
             selectedId={selectedId}
             onSelectNode={setSelectedId}
+            onEditValue={handleEditNodeValue}
           />
         );
       case 'stack':
         return (
           <StackWorkspace
             elements={elements}
+            setElements={setElements}
             selectedId={selectedId}
             onSelectNode={setSelectedId}
+            onEditValue={handleEditNodeValue}
           />
         );
       case 'queue':
         return (
           <QueueWorkspace
             elements={elements}
+            setElements={setElements}
             selectedId={selectedId}
             onSelectNode={setSelectedId}
+            onEditValue={handleEditNodeValue}
           />
         );
       case 'linkedlist':
@@ -248,6 +264,7 @@ function App() {
             setElements={setElements}
             selectedId={selectedId}
             onSelectNode={setSelectedId}
+            onEditValue={handleEditNodeValue}
           />
         );
       case 'tree':
@@ -257,6 +274,7 @@ function App() {
             setElements={setElements}
             selectedId={selectedId}
             onSelectNode={setSelectedId}
+            onEditValue={handleEditNodeValue}
           />
         );
       default:

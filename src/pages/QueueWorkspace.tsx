@@ -29,20 +29,20 @@ export const QueueWorkspace: React.FC<QueueWorkspaceProps> = ({
   return (
     <div className="flex flex-col items-center justify-center gap-8 w-full py-10">
       {elements.length === 0 ? (
-        <div className="text-purple-300 font-display font-medium text-sm select-none p-8 border border-dashed border-purple-100 rounded-3xl">
+        <div className="text-[#4c258d]/70 font-display font-medium text-sm select-none p-8 border border-dashed border-[#a38deb]/45 rounded-3xl">
           Queue empty. Enqueue elements in the left panel!
         </div>
       ) : (
         <div className="flex flex-col items-center w-full max-w-2xl">
           {/* Header instructions */}
-          <div className="text-center text-[10px] text-purple-400 font-black tracking-widest uppercase mb-6 flex items-center justify-center gap-1">
+          <div className="text-center text-[10px] text-[#4c258d]/80 font-black tracking-widest uppercase mb-6 flex items-center justify-center gap-1">
             <ArrowLeft className="w-3.5 h-3.5" />
             <span>Drag elements to reorder • Double-click to edit</span>
             <ArrowLeft className="w-3.5 h-3.5" />
           </div>
 
           {/* Figma Auto-Layout Horizontal Queue pipeline */}
-          <div className="w-full border-y-4 border-dashed border-purple-100/80 py-8 bg-purple-50/5 relative flex items-center justify-center min-h-[140px] px-6">
+          <div className="w-full border-y-4 border-dashed border-[#a38deb] py-8 bg-[#a28ceb]/10 relative flex items-center justify-center min-h-[140px] px-6">
             <Reorder.Group
               axis="x"
               values={elements}
@@ -63,7 +63,6 @@ export const QueueWorkspace: React.FC<QueueWorkspaceProps> = ({
                   >
                     {/* Node Card Component */}
                     <NodeCard
-                      id={el.id}
                       value={el.value}
                       isSelected={isSelected}
                       onSelect={() => onSelectNode(isSelected ? null : el.id)}
@@ -71,18 +70,18 @@ export const QueueWorkspace: React.FC<QueueWorkspaceProps> = ({
                     />
                     
                     {/* Index small tag */}
-                    <span className="text-[8px] text-purple-400 font-mono absolute bottom-1 right-2 select-none">
+                    <span className="text-[8px] text-[#4c258d] font-mono absolute bottom-1 right-2 select-none">
                       [{idx}]
                     </span>
 
                     {/* Pointer Banners */}
                     {isFront && (
-                      <div className="absolute -top-7 left-1/2 -translate-x-1/2 bg-purple-500 text-white text-[8px] font-black tracking-widest px-2 py-0.5 rounded-full uppercase shadow-sm select-none">
+                      <div className="absolute -top-7 left-1/2 -translate-x-1/2 bg-[#4a238a] text-[#ece8ff] text-[8px] font-black tracking-widest px-2 py-0.5 rounded-full uppercase shadow-sm select-none">
                         Front
                       </div>
                     )}
                     {isRear && !isFront && (
-                      <div className="absolute -top-7 left-1/2 -translate-x-1/2 bg-indigo-400 text-white text-[8px] font-black tracking-widest px-2 py-0.5 rounded-full uppercase shadow-sm select-none">
+                      <div className="absolute -top-7 left-1/2 -translate-x-1/2 bg-[#4c258d] text-[#ece8ff] text-[8px] font-black tracking-widest px-2 py-0.5 rounded-full uppercase shadow-sm select-none">
                         Rear
                       </div>
                     )}

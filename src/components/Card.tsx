@@ -37,9 +37,9 @@ export const Card: React.FC<CardProps> = ({
         ${className}
       `}
     >
-      {/* Decorative inner ambient light */}
-      <div className="absolute -top-10 -left-10 w-20 h-20 bg-purple-200/20 rounded-full blur-2xl pointer-events-none" />
-      <div className="absolute -bottom-10 -right-10 w-20 h-20 bg-pink-200/20 rounded-full blur-2xl pointer-events-none" />
+      {/* Decorative lavender inner ambient light */}
+      <div className="absolute -top-10 -left-10 w-20 h-20 bg-[#d0c4fc]/25 rounded-full blur-2xl pointer-events-none" />
+      <div className="absolute -bottom-10 -right-10 w-20 h-20 bg-[#4a238a]/15 rounded-full blur-2xl pointer-events-none" />
       
       {children}
     </CardComponent>

@@ -28,12 +28,12 @@ export const ArrayWorkspace: React.FC<ArrayWorkspaceProps> = ({
   return (
     <div className="flex flex-col items-center justify-center gap-8 w-full py-10">
       {elements.length === 0 ? (
-        <div className="text-purple-300 font-display font-medium text-sm select-none p-8 border border-dashed border-purple-100 rounded-3xl">
+        <div className="text-[#4c258d]/70 font-display font-medium text-sm select-none p-8 border border-dashed border-[#a38deb]/45 rounded-3xl">
           Array empty. Add elements in the left panel!
         </div>
       ) : (
         <div className="flex flex-col gap-2 w-full max-w-2xl">
-          <div className="text-center text-[10px] text-purple-400 font-black tracking-widest uppercase mb-4">
+          <div className="text-center text-[10px] text-[#4c258d]/80 font-black tracking-widest uppercase mb-4">
             Drag elements horizontally to reorder • Double-click to edit value
           </div>
 
@@ -54,13 +54,12 @@ export const ArrayWorkspace: React.FC<ArrayWorkspaceProps> = ({
                   whileDrag={{ scale: 1.08, zIndex: 10 }}
                 >
                   {/* Index Header */}
-                  <span className="text-[10px] font-bold font-mono text-purple-400 select-none">
+                  <span className="text-[10px] font-bold font-mono text-[#4c258d] select-none">
                     Index {idx}
                   </span>
 
                   {/* Smart Node Card Component */}
                   <NodeCard
-                    id={el.id}
                     value={el.value}
                     isSelected={isSelected}
                     onSelect={() => onSelectNode(isSelected ? null : el.id)}

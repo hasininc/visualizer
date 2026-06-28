@@ -28,17 +28,17 @@ export const LinkedListWorkspace: React.FC<LinkedListWorkspaceProps> = ({
   return (
     <div className="flex flex-col items-center justify-center gap-8 w-full py-10">
       {elements.length === 0 ? (
-        <div className="text-purple-300 font-display font-medium text-sm select-none p-8 border border-dashed border-purple-100 rounded-3xl">
+        <div className="text-[#4c258d]/70 font-display font-medium text-sm select-none p-8 border border-dashed border-[#a38deb]/45 rounded-3xl">
           Linked List empty. Add nodes in the left panel!
         </div>
       ) : (
         <div className="flex flex-col gap-2 w-full max-w-2xl">
-          <div className="text-center text-[10px] text-purple-400 font-black tracking-widest uppercase mb-4">
+          <div className="text-center text-[10px] text-[#4c258d]/80 font-black tracking-widest uppercase mb-4">
             Drag nodes horizontally to reorder • Double-click to edit
           </div>
 
           {/* Figma Auto-Layout Linked List Row */}
-          <div className="w-full bg-purple-50/5 rounded-3xl border border-purple-100/60 p-8 flex items-center justify-center min-h-[160px]">
+          <div className="w-full bg-[#a28ceb]/10 rounded-3xl border border-[#a38deb] p-8 flex items-center justify-center min-h-[160px]">
             <Reorder.Group
               axis="x"
               values={elements}
@@ -59,7 +59,6 @@ export const LinkedListWorkspace: React.FC<LinkedListWorkspaceProps> = ({
                     {/* Node Circle */}
                     <div className="relative pb-3">
                       <NodeCard
-                        id={el.id}
                         value={el.value}
                         isSelected={isSelected}
                         onSelect={() => onSelectNode(isSelected ? null : el.id)}
@@ -68,14 +67,14 @@ export const LinkedListWorkspace: React.FC<LinkedListWorkspaceProps> = ({
                       />
                       
                       {/* Subtitle tag */}
-                      <span className="text-[7px] text-purple-400 font-mono absolute bottom-0.5 left-1/2 -translate-x-1/2 uppercase tracking-tighter font-black select-none">
+                      <span className="text-[7px] text-[#4c258d] font-mono absolute bottom-0.5 left-1/2 -translate-x-1/2 uppercase tracking-tighter font-black select-none">
                         {idx === 0 ? 'Head' : isLast ? 'Tail' : `n${idx}`}
                       </span>
                     </div>
 
                     {/* Inline vector connector arrow */}
                     {!isLast && (
-                      <div className="flex items-center text-purple-300 pointer-events-none select-none">
+                      <div className="flex items-center text-[#4a238a] pointer-events-none select-none">
                         <svg className="w-6 h-6 fill-current animate-pulse" viewBox="0 0 24 24">
                           <path d="M5 13h11.86l-5.43 5.43 1.42 1.42L21.14 12l-8.29-8.29-1.42 1.42 5.43 5.43H5v2z" />
                         </svg>

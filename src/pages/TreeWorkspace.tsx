@@ -113,7 +113,7 @@ export const TreeWorkspace: React.FC<TreeWorkspaceProps> = ({
         y1={y1}
         x2={x2}
         y2={y2}
-        stroke="#b19ffb"
+        stroke="#4c258d"
         strokeWidth="2.5"
         strokeDasharray="4 4"
         strokeLinecap="round"
@@ -123,13 +123,13 @@ export const TreeWorkspace: React.FC<TreeWorkspaceProps> = ({
 
   return (
     <div className="flex flex-col items-center w-full h-full relative p-4 gap-4 select-none">
-      <div className="text-center text-[10px] text-purple-400 font-black tracking-widest uppercase z-10 px-6">
+      <div className="text-center text-[10px] text-[#4c258d]/80 font-black tracking-widest uppercase z-10 px-6">
         Auto-spaces parent & children • Drag freely • Double-click to edit
       </div>
 
       <div
         ref={canvasRef}
-        className="w-full h-[320px] bg-purple-50/5 rounded-3xl border border-purple-100/60 relative overflow-hidden flex items-center justify-center"
+        className="w-full h-[320px] bg-[#a28ceb]/10 rounded-3xl border border-[#a38deb] relative overflow-hidden flex items-center justify-center"
       >
         {/* SVG Links Overlay */}
         <svg className="absolute inset-0 w-full h-full pointer-events-none z-0">
@@ -137,7 +137,7 @@ export const TreeWorkspace: React.FC<TreeWorkspaceProps> = ({
         </svg>
 
         {elements.length === 0 ? (
-          <div className="text-purple-300 font-display font-medium text-sm select-none z-10">
+          <div className="text-[#4c258d]/70 font-display font-medium text-sm select-none z-10">
             Tree empty. Add root node in the left panel!
           </div>
         ) : (
@@ -167,7 +167,6 @@ export const TreeWorkspace: React.FC<TreeWorkspaceProps> = ({
               >
                 {/* Reusable Double-click Node Card */}
                 <NodeCard
-                  id={el.id}
                   value={el.value}
                   isSelected={isSelected}
                   onSelect={() => onSelectNode(isSelected ? null : el.id)}
@@ -177,7 +176,7 @@ export const TreeWorkspace: React.FC<TreeWorkspaceProps> = ({
                 />
                 
                 {/* Small indicator tag */}
-                <span className="text-[6px] text-purple-400 font-mono absolute -bottom-3 left-1/2 -translate-x-1/2 uppercase tracking-tighter select-none font-bold">
+                <span className="text-[6px] text-[#4c258d] font-mono absolute -bottom-3 left-1/2 -translate-x-1/2 uppercase tracking-tighter select-none font-bold">
                   {isRoot ? 'Root' : isSelected ? 'Sel' : ''}
                 </span>
               </motion.div>

@@ -8,18 +8,18 @@ interface NavbarProps {
 
 export const Navbar: React.FC<NavbarProps> = ({ onOpenAboutModal }) => {
   return (
-    <header className="sticky top-0 z-40 w-full glass-panel border-b border-purple-100 bg-[#fdfbfd]/80 backdrop-blur-md px-6 py-4">
+    <header className="sticky top-0 z-40 w-full glass-panel border-b border-[#a38deb] bg-[#bdabfc]/95 px-6 py-4">
       <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
         {/* Title and Logo */}
         <div className="flex items-center gap-3 select-none">
-          <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-purple-400 to-indigo-400 flex items-center justify-center shadow-[0_4px_12px_rgba(139,92,246,0.18)]">
-            <Cpu className="w-5.5 h-5.5 text-white" />
+          <div className="w-10 h-10 rounded-2xl bg-[#4c258d] flex items-center justify-center shadow-md">
+            <Cpu className="w-5.5 h-5.5 text-[#ece8ff]" />
           </div>
           <div className="flex flex-col">
-            <h1 className="text-xl font-black font-display tracking-wide text-purple-950 flex items-center gap-1.5 leading-none">
-              DSA <span className="text-purple-400 font-medium">Visualizer</span>
+            <h1 className="text-xl font-black font-display tracking-wide text-[#250d4f] flex items-center gap-1.5 leading-none">
+              DSA <span className="text-[#4c258d] font-semibold">Visualizer</span>
             </h1>
-            <p className="text-xs text-purple-500 font-semibold font-display tracking-normal mt-0.5">
+            <p className="text-xs text-[#4c258d]/80 font-bold font-display mt-0.5">
               Build and Understand Data Structures
             </p>
           </div>
@@ -30,8 +30,8 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAboutModal }) => {
           <Button
             variant="secondary"
             onClick={onOpenAboutModal}
-            icon={<HelpCircle className="w-4 h-4 text-purple-600" />}
-            className="px-4 py-1.5 rounded-xl border-purple-100/60"
+            icon={<HelpCircle className="w-4 h-4 text-[#250d4f]" />}
+            className="px-4 py-1.5 rounded-xl border-[#947deb]"
           >
             How it works
           </Button>
@@ -40,7 +40,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAboutModal }) => {
             href="https://github.com"
             target="_blank"
             rel="noreferrer"
-            className="text-purple-400 hover:text-purple-600 p-2 rounded-xl hover:bg-purple-50/50 transition-all border border-transparent hover:border-purple-100"
+            className="text-[#250d4f] hover:text-[#4c258d] p-2 rounded-xl hover:bg-[#a28ceb]/30 transition-all border border-transparent hover:border-[#947deb]"
             title="GitHub Repository"
           >
             <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">

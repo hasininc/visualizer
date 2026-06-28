@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 
 interface NodeCardProps {
-  id: string;
   value: string;
   isSelected?: boolean;
   onSelect?: () => void;
@@ -81,10 +80,10 @@ export const NodeCard: React.FC<NodeCardProps> = ({
         ${sizeClasses[size]}
         ${
           isSelected && !isEditing
-            ? 'bg-gradient-to-tr from-purple-200 to-indigo-200 border-purple-400 text-purple-950 shadow-md shadow-purple-500/10 active-glow'
+            ? 'bg-[#4a238a] border-[#4a238a] text-[#f3f0fd] shadow-md active-glow'
             : isEditing
-            ? 'bg-white border-purple-400 ring-2 ring-purple-100'
-            : 'bg-white border-purple-100 hover:border-purple-300 text-purple-900 shadow-sm shadow-purple-500/5'
+            ? 'bg-[#dfd7fc] border-[#4a238a] ring-2 ring-[#bdabfc]'
+            : 'bg-[#d0c4fc] border-[#b5a1eb] hover:border-[#4a238a] text-[#250d4f] shadow-sm'
         }
         ${className}
       `}
@@ -99,7 +98,7 @@ export const NodeCard: React.FC<NodeCardProps> = ({
           onBlur={handleSave}
           onKeyDown={handleKeyDown}
           onClick={(e) => e.stopPropagation()}
-          className="w-full h-full text-center bg-transparent outline-none text-purple-950 font-bold border-none p-0 focus:ring-0"
+          className="w-full h-full text-center bg-transparent outline-none text-[#250d4f] font-bold border-none p-0 focus:ring-0"
         />
       ) : (
         <span>{value}</span>

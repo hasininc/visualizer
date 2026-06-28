@@ -36,19 +36,19 @@ export const StackWorkspace: React.FC<StackWorkspaceProps> = ({
   return (
     <div className="flex flex-col items-center justify-center gap-6 w-full py-6">
       {elements.length === 0 ? (
-        <div className="text-purple-300 font-display font-medium text-sm select-none p-8 border border-dashed border-purple-100 rounded-3xl">
+        <div className="text-[#4c258d]/70 font-display font-medium text-sm select-none p-8 border border-dashed border-[#a38deb]/45 rounded-3xl">
           Stack empty. Push elements in the left panel!
         </div>
       ) : (
         <div className="flex flex-col items-center w-full max-w-xs">
-          <div className="text-center text-[10px] text-purple-400 font-black tracking-widest uppercase mb-6">
+          <div className="text-center text-[10px] text-[#4c258d]/80 font-black tracking-widest uppercase mb-6">
             Drag vertically to reorder stack • Double-click to edit
           </div>
 
           {/* Figma Vertical Auto-Layout Stack Capsule */}
-          <div className="border-x-4 border-b-4 border-purple-100 rounded-b-3xl p-4 bg-purple-50/10 min-w-[150px] relative pt-6 flex flex-col items-center">
+          <div className="border-x-4 border-b-4 border-[#a38deb] rounded-b-3xl p-4 bg-[#a28ceb]/10 min-w-[150px] relative pt-6 flex flex-col items-center">
             {/* Top Indicator Label */}
-            <div className="absolute -top-6 left-1/2 -translate-x-1/2 text-[10px] text-purple-400 font-bold font-mono tracking-widest uppercase select-none">
+            <div className="absolute -top-6 left-1/2 -translate-x-1/2 text-[10px] text-[#4c258d] font-bold font-mono tracking-widest uppercase select-none">
               Top of Stack
             </div>
 
@@ -66,11 +66,10 @@ export const StackWorkspace: React.FC<StackWorkspaceProps> = ({
                   <Reorder.Item
                     key={el.id}
                     value={el}
-                    className="cursor-grab active:cursor-grabbing flex items-center justify-between gap-3 px-3 py-1 bg-white/40 hover:bg-white/60 border border-purple-50 rounded-2xl w-full select-none"
+                    className="cursor-grab active:cursor-grabbing flex items-center justify-between gap-3 px-3 py-1 bg-[#dfd7fc]/40 hover:bg-[#dfd7fc]/60 border border-[#a38deb]/30 rounded-2xl w-full select-none"
                     whileDrag={{ scale: 1.05, zIndex: 10 }}
                   >
                     <NodeCard
-                      id={el.id}
                       value={el.value}
                       isSelected={isSelected}
                       onSelect={() => onSelectNode(isSelected ? null : el.id)}
@@ -79,7 +78,7 @@ export const StackWorkspace: React.FC<StackWorkspaceProps> = ({
                       className="flex-shrink-0"
                     />
                     
-                    <span className="text-[9px] text-purple-400 font-mono font-bold uppercase select-none">
+                    <span className="text-[9px] text-[#4c258d] font-mono font-bold uppercase select-none">
                       {isTop ? 'TOP' : `[${elements.length - 1 - idx}]`}
                     </span>
                   </Reorder.Item>

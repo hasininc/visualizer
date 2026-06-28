@@ -36,9 +36,9 @@ function App() {
   const [inputValue, setInputValue] = useState<string>('');
   const [isHowItWorksOpen, setIsHowItWorksOpen] = useState<boolean>(false);
 
-  // Pre-load randomized data when switching structures
+  // Start with empty structures by default when switching
   useEffect(() => {
-    handleRandomize(activeDS);
+    setElements([]);
     setSelectedId(null);
     setInputValue('');
   }, [activeDS]);
@@ -300,26 +300,26 @@ function App() {
         
         {/* Left Side Control Panel */}
         <div className="w-full lg:w-80 flex-shrink-0 flex flex-col gap-6">
-          <Card className="flex flex-col gap-5 border-purple-100/80 bg-white/70">
+          <Card className="flex flex-col gap-5 border-[#a38deb]">
             
             {/* Header section of Panel */}
-            <div className="flex items-center gap-1.5 border-b border-purple-100/50 pb-3">
-              <Sparkles className="w-4.5 h-4.5 text-purple-500" />
-              <h3 className="font-bold text-sm text-purple-950 font-display">
+            <div className="flex items-center gap-1.5 border-b border-[#a38deb]/50 pb-3">
+              <Sparkles className="w-4.5 h-4.5 text-[#4c258d]" />
+              <h3 className="font-bold text-sm text-[#250d4f] font-display">
                 Visualizer Panel
               </h3>
             </div>
 
             {/* Dropdown Selector */}
             <div className="flex flex-col gap-2">
-              <label className="text-[10px] font-black uppercase tracking-widest text-purple-400">
+              <label className="text-[10px] font-black uppercase tracking-widest text-[#4c258d]">
                 Structure Type
               </label>
               <div className="relative flex items-center">
                 <select
                   value={activeDS}
                   onChange={(e) => setActiveDS(e.target.value)}
-                  className="w-full pl-3 pr-10 py-2.5 bg-white border border-purple-100 hover:border-purple-200 text-purple-900 rounded-2xl text-sm font-semibold focus:outline-none appearance-none cursor-pointer shadow-sm transition-all"
+                  className="w-full pl-3 pr-10 py-2.5 bg-[#dfd7fc] border border-[#a38deb] hover:border-[#4c258d] text-[#250d4f] rounded-2xl text-sm font-bold focus:outline-none appearance-none cursor-pointer shadow-sm transition-all"
                 >
                   {dsOptions.map((opt) => (
                     <option key={opt.value} value={opt.value}>
@@ -327,13 +327,13 @@ function App() {
                     </option>
                   ))}
                 </select>
-                <ChevronDown className="w-4 h-4 text-purple-400 absolute right-3 pointer-events-none" />
+                <ChevronDown className="w-4 h-4 text-[#250d4f] absolute right-3 pointer-events-none" />
               </div>
             </div>
 
             {/* Value Input */}
             <div className="flex flex-col gap-2">
-              <label className="text-[10px] font-black uppercase tracking-widest text-purple-400">
+              <label className="text-[10px] font-black uppercase tracking-widest text-[#4c258d]">
                 Input Element Value
               </label>
               <input
@@ -342,7 +342,7 @@ function App() {
                 placeholder="Enter numbers or text"
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
-                className="w-full px-3 py-2.5 bg-white border border-purple-100 hover:border-purple-200 text-purple-900 rounded-2xl text-sm font-semibold focus:outline-none shadow-sm transition-all"
+                className="w-full px-3 py-2.5 bg-[#dfd7fc] border border-[#a38deb] hover:border-[#4c258d] text-[#250d4f] placeholder-[#250d4f]/45 rounded-2xl text-sm font-bold focus:outline-none shadow-sm transition-all"
               />
             </div>
 
@@ -400,9 +400,9 @@ function App() {
           </Card>
           
           {/* Help hints card */}
-          <div className="text-[11px] text-purple-500 bg-white/40 border border-purple-100/40 rounded-3xl p-4 flex flex-col gap-1.5 shadow-sm">
+          <div className="text-[11px] text-[#250d4f]/80 bg-[#a28ceb]/30 border border-[#947deb]/40 rounded-3xl p-4 flex flex-col gap-1.5 shadow-sm">
             <div className="font-bold flex items-center gap-1">
-              <HelpCircle className="w-3.5 h-3.5 text-purple-500" />
+              <HelpCircle className="w-3.5 h-3.5 text-[#250d4f]" />
               <span>Did you know?</span>
             </div>
             {activeDS === 'array' && (
@@ -425,21 +425,21 @@ function App() {
 
         {/* Right Sandbox Workspace Canvas */}
         <div className="flex-1 flex flex-col">
-          <Card className="flex-1 bg-white/80 border-purple-100 shadow-[0_12px_40px_-15px_rgba(139,92,246,0.06)] relative overflow-hidden flex flex-col justify-between min-h-[460px] p-8">
+          <Card className="flex-1 border-[#a38deb] relative overflow-hidden flex flex-col justify-between min-h-[460px] p-8">
             {/* Visual Grid background details */}
             <div className="absolute inset-0 bg-grid-pattern opacity-100 pointer-events-none" />
             
             {/* Header info bar */}
-            <div className="flex justify-between items-center border-b border-purple-100/60 pb-3 relative z-10">
-              <h4 className="text-base font-bold font-display text-purple-950 flex items-center gap-2">
-                <span className="w-2.5 h-2.5 rounded-full bg-purple-400 animate-pulse" />
+            <div className="flex justify-between items-center border-b border-[#a38deb]/60 pb-3 relative z-10">
+              <h4 className="text-base font-bold font-display text-[#250d4f] flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-[#4c258d] animate-pulse" />
                 {dsOptions.find(opt => opt.value === activeDS)?.label} Canvas
               </h4>
               <div className="flex gap-2">
                 <Button
                   variant="secondary"
                   onClick={() => handleRandomize()}
-                  icon={<RefreshCw className="w-3.5 h-3.5 text-purple-600" />}
+                  icon={<RefreshCw className="w-3.5 h-3.5 text-[#250d4f]" />}
                   className="px-3.5 py-1 text-xs rounded-xl"
                 >
                   Reset Layout
@@ -453,17 +453,17 @@ function App() {
             </div>
 
             {/* Bottom status bar */}
-            <div className="border-t border-purple-100/50 pt-3 relative z-10 flex justify-between items-center text-xs text-purple-500 font-mono">
+            <div className="border-t border-[#a38deb]/50 pt-3 relative z-10 flex justify-between items-center text-xs text-[#250d4f] font-mono">
               <div>
                 Elements count: <span className="font-bold">{elements.length}</span>
               </div>
               <div>
                 Selected Node: {selectedId ? (
-                  <span className="text-purple-700 font-bold bg-purple-100/50 px-2 py-0.5 rounded-md">
+                  <span className="text-[#f3f0fd] font-bold bg-[#4a238a] px-2 py-0.5 rounded-md">
                     {elements.find(el => el.id === selectedId)?.value || 'None'}
                   </span>
                 ) : (
-                  <span className="text-purple-400">None</span>
+                  <span className="text-[#250d4f]/60 font-bold">None</span>
                 )}
               </div>
             </div>
@@ -472,10 +472,10 @@ function App() {
       </div>
 
       {/* Footer Details */}
-      <footer className="border-t border-purple-100/40 bg-white/40 py-6 text-center text-xs text-purple-500 font-mono">
+      <footer className="border-t border-[#a38deb]/40 bg-[#bdabfc]/60 py-6 text-center text-xs text-[#250d4f] font-mono">
         <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-1.5">
-            <Cpu className="w-3.5 h-3.5 text-purple-500" />
+            <Cpu className="w-3.5 h-3.5 text-[#4c258d]" />
             <span>DSA Visualizer Playground v2.0.0</span>
           </div>
           <div>
@@ -491,44 +491,44 @@ function App() {
         title="Interactive Playground Guide"
         size="md"
       >
-        <div className="flex flex-col gap-5 text-purple-900">
-          <div className="flex items-center gap-3 bg-purple-50/50 p-3.5 rounded-2xl border border-purple-100/50">
-            <div className="w-9 h-9 bg-purple-100 rounded-xl flex items-center justify-center">
-              <Play className="w-5 h-5 text-purple-600 fill-purple-600" />
+        <div className="flex flex-col gap-5 text-[#250d4f]">
+          <div className="flex items-center gap-3 bg-[#a28ceb]/20 p-3.5 rounded-2xl border border-[#947deb]/40">
+            <div className="w-9 h-9 bg-[#dfd7fc] rounded-xl flex items-center justify-center">
+              <Play className="w-5 h-5 text-[#4a238a] fill-[#4a238a]" />
             </div>
             <div>
-              <h4 className="font-bold text-sm text-purple-950">Whiteboard Sandbox Mechanics</h4>
-              <p className="text-[11px] text-purple-600 font-semibold">Manipulate nodes in real time just like Canva or Figma.</p>
+              <h4 className="font-bold text-sm text-[#250d4f]">Whiteboard Sandbox Mechanics</h4>
+              <p className="text-[11px] text-[#4a238a] font-black">Manipulate nodes in real time just like Canva or Figma.</p>
             </div>
           </div>
 
-          <div className="flex flex-col gap-3 text-xs leading-relaxed text-purple-800">
+          <div className="flex flex-col gap-3 text-xs leading-relaxed text-[#250d4f]/80">
             <p>
               This app is designed to help you construct and manipulate standard data structures visually. Here's how you can play:
             </p>
             <ul className="list-disc pl-5 flex flex-col gap-1.5">
               <li>
-                <span className="font-bold text-purple-900">Drag to Position:</span> In the Linked List and Tree view, you can drag circles freely inside the canvas. Connection lines adapt automatically!
+                <span className="font-bold text-[#250d4f]">Drag to Position:</span> In the Linked List and Tree view, you can drag circles freely inside the canvas. Connection lines adapt automatically!
               </li>
               <li>
-                <span className="font-bold text-purple-900">Drag to Reorder Array:</span> Drag any index box horizontally to reposition it in the array slots.
+                <span className="font-bold text-[#250d4f]">Drag to Reorder Array:</span> Drag any index box horizontally to reposition it in the array slots.
               </li>
               <li>
-                <span className="font-bold text-purple-900">Insert Anywhere (Array):</span> Select a box in the Array, enter a value, and click Add to insert a new element at that index.
+                <span className="font-bold text-[#250d4f]">Insert Anywhere (Array):</span> Select a box in the Array, enter a value, and click Add to insert a new element at that index.
               </li>
               <li>
-                <span className="font-bold text-purple-900">Build custom Trees:</span> Select a parent node, type a value, and click Add. The child connects automatically! To delete a subtree, select the parent node and click Delete.
+                <span className="font-bold text-[#250d4f]">Build custom Trees:</span> Select a parent node, type a value, and click Add. The child connects automatically! To delete a subtree, select the parent node and click Delete.
               </li>
               <li>
-                <span className="font-bold text-purple-900">LIFO & FIFO Rules:</span> Push/Pop and Enqueue/Dequeue automatically animate values entering and exiting Stack and Queue layouts.
+                <span className="font-bold text-[#250d4f]">LIFO & FIFO Rules:</span> Push/Pop and Enqueue/Dequeue automatically animate values entering and exiting Stack and Queue layouts.
               </li>
             </ul>
           </div>
 
-          <div className="border-t border-purple-100/50 pt-4 flex justify-end">
+          <div className="border-t border-[#a38deb]/45 pt-4 flex justify-end">
             <button
               onClick={() => setIsHowItWorksOpen(false)}
-              className="px-4 py-2 bg-gradient-to-r from-purple-400 to-indigo-400 text-white rounded-2xl text-xs font-bold shadow-sm shadow-purple-500/10 cursor-pointer transition-all hover:shadow-md"
+              className="px-4 py-2 bg-[#4c258d] text-[#ece8ff] hover:bg-[#3f1c7a] rounded-2xl text-xs font-bold shadow-md cursor-pointer transition-all"
             >
               Start Building
             </button>

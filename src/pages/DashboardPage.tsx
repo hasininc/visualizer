@@ -111,28 +111,30 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
         />
       </div>
 
-      {/* Center Canvas Workspace */}
+      {/* Main Workspace (Visualizer on top, specs and code side-by-side underneath) */}
       <div className="flex-1 flex flex-col gap-6">
         {renderVisualizerCanvas()}
-      </div>
 
-      {/* Right Metadata Side Panels */}
-      <div className="w-full md:w-80 flex flex-col gap-6 flex-shrink-0">
-        {/* Complexity specs */}
-        <ComplexityCard
-          algorithmName={activeComplexity.algorithmName}
-          timeBest={activeComplexity.timeBest}
-          timeAverage={activeComplexity.timeAverage}
-          timeWorst={activeComplexity.timeWorst}
-          spaceWorst={activeComplexity.spaceWorst}
-        />
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+          {/* Complexity specs */}
+          <div className="lg:col-span-5 flex flex-col">
+            <ComplexityCard
+              algorithmName={activeComplexity.algorithmName}
+              timeBest={activeComplexity.timeBest}
+              timeAverage={activeComplexity.timeAverage}
+              timeWorst={activeComplexity.timeWorst}
+              spaceWorst={activeComplexity.spaceWorst}
+              className="h-full"
+            />
+          </div>
 
-        {/* Dynamic code viewer */}
-        <div className="flex flex-col gap-2">
-          <span className="text-[10px] text-zinc-500 uppercase tracking-widest font-black font-sans px-1">
-            Implementation Trace
-          </span>
-          <CodeBlock code={activeCode} language="javascript" />
+          {/* Dynamic code viewer */}
+          <div className="lg:col-span-7 flex flex-col gap-2">
+            <span className="text-[10px] text-zinc-500 uppercase tracking-widest font-black font-sans px-1">
+              Implementation Trace
+            </span>
+            <CodeBlock code={activeCode} language="javascript" className="flex-1" />
+          </div>
         </div>
       </div>
     </div>

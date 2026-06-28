@@ -33,13 +33,13 @@ export const Card: React.FC<CardProps> = ({
       className={`
         ${glow ? 'glass-panel-glow' : 'glass-panel'}
         ${hoverEffect && !onClick ? 'glow-card' : ''}
-        rounded-2xl p-6 transition-all duration-300 relative overflow-hidden
+        rounded-3xl p-6 transition-all duration-300 relative overflow-hidden
         ${className}
       `}
     >
       {/* Decorative inner ambient light */}
-      <div className="absolute -top-10 -left-10 w-20 h-20 bg-accent-blue/10 rounded-full blur-2xl pointer-events-none" />
-      <div className="absolute -bottom-10 -right-10 w-20 h-20 bg-accent-purple/10 rounded-full blur-2xl pointer-events-none" />
+      <div className="absolute -top-10 -left-10 w-20 h-20 bg-purple-200/20 rounded-full blur-2xl pointer-events-none" />
+      <div className="absolute -bottom-10 -right-10 w-20 h-20 bg-pink-200/20 rounded-full blur-2xl pointer-events-none" />
       
       {children}
     </CardComponent>

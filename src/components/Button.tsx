@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 
 interface ButtonProps {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   onClick?: () => void;
   variant?: 'primary' | 'secondary' | 'ghost' | 'danger';
   className?: string;
@@ -42,7 +42,7 @@ export const Button: React.FC<ButtonProps> = ({
       className={`${baseStyles} ${variants[variant]} ${className}`}
     >
       {icon && <span className="text-base flex items-center justify-center">{icon}</span>}
-      <span>{children}</span>
+      {children && <span>{children}</span>}
     </motion.button>
   );
 };

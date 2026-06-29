@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { NodeCard } from '../components/NodeCard';
 
@@ -16,6 +16,11 @@ interface TreeWorkspaceProps {
   selectedId: string | null;
   onSelectNode: (id: string | null) => void;
   onEditValue?: (id: string, newValue: string) => void;
+  visualizationData?: {
+    activeId: string | null;
+    visitedIds: string[];
+    description: string;
+  } | null;
 }
 
 export const TreeWorkspace: React.FC<TreeWorkspaceProps> = ({
@@ -24,10 +29,13 @@ export const TreeWorkspace: React.FC<TreeWorkspaceProps> = ({
   selectedId,
   onSelectNode,
   onEditValue,
+  visualizationData,
 }) => {
   const canvasRef = useRef<HTMLDivElement>(null);
+  const isVisualizing = !!visualizationData;
 
   const handleDrag = (id: string, info: any) => {
+    if (isVisualizing) return;
     setElements((prev) =>
       prev.map((el) => {
         if (el.id === id) {
@@ -42,7 +50,7 @@ export const TreeWorkspace: React.FC<TreeWorkspaceProps> = ({
     );
   };
 
-  const autoLayoutTree = () => {
+  const autoLayoutTree = useCallback(() => {
     if (elements.length === 0) return;
     const root = elements.find((n) => !n.parentId);
     if (!root) return;
@@ -81,12 +89,12 @@ export const TreeWorkspace: React.FC<TreeWorkspaceProps> = ({
         return el;
       })
     );
-  };
+  }, [elements, setElements]);
 
-  // Run layout once elements list size changes (Add or Delete events)
+  // Run layout once elements list size changes
   useEffect(() => {
     autoLayoutTree();
-  }, [elements.length]);
+  }, [elements.length, autoLayoutTree]);
 
   const renderLink = (child: DSNode) => {
     if (!child.parentId) return null;
@@ -106,6 +114,11 @@ export const TreeWorkspace: React.FC<TreeWorkspaceProps> = ({
     const x2 = child.x - r * Math.cos(angle);
     const y2 = child.y - r * Math.sin(angle);
 
+    // If visualizing, draw links matching traversal paths in solid lines
+    const isChildVisited = isVisualizing && visualizationData.visitedIds.includes(child.id);
+    const isParentVisited = isVisualizing && visualizationData.visitedIds.includes(parent.id);
+    const isPathLink = isChildVisited && isParentVisited;
+
     return (
       <line
         key={`link-${child.id}`}
@@ -113,10 +126,11 @@ export const TreeWorkspace: React.FC<TreeWorkspaceProps> = ({
         y1={y1}
         x2={x2}
         y2={y2}
-        stroke="#4c258d"
-        strokeWidth="2.5"
-        strokeDasharray="4 4"
+        stroke={isPathLink ? '#10b981' : '#4c258d'}
+        strokeWidth={isPathLink ? '3.5' : '2.5'}
+        strokeDasharray={isPathLink ? '' : '4 4'}
         strokeLinecap="round"
+        className="transition-all duration-300"
       />
     );
   };
@@ -124,7 +138,9 @@ export const TreeWorkspace: React.FC<TreeWorkspaceProps> = ({
   return (
     <div className="flex flex-col items-center w-full h-full relative p-4 gap-4 select-none">
       <div className="text-center text-[10px] text-[#4c258d]/80 font-black tracking-widest uppercase z-10 px-6">
-        Auto-spaces parent & children • Drag freely • Double-click to edit
+        {isVisualizing
+          ? 'Tree algorithm in progress... Interactivity paused.'
+          : 'Auto-spaces parent & children • Drag freely • Double-click to edit'}
       </div>
 
       <div
@@ -145,10 +161,21 @@ export const TreeWorkspace: React.FC<TreeWorkspaceProps> = ({
             const isSelected = selectedId === el.id;
             const isRoot = !el.parentId;
             
+            // Visual highlights
+            const isActive = isVisualizing && visualizationData.activeId === el.id;
+            const isVisited = isVisualizing && visualizationData.visitedIds.includes(el.id);
+
+            let nodeClass = 'rounded-full';
+            if (isActive) {
+              nodeClass += ' ring-4 ring-purple-600 ring-offset-2 bg-purple-700 border-purple-800 text-white animate-pulse';
+            } else if (isVisited) {
+              nodeClass += ' bg-emerald-200 border-emerald-500 text-emerald-950 shadow-sm';
+            }
+
             return (
               <motion.div
                 key={el.id}
-                drag
+                drag={!isVisualizing}
                 dragConstraints={canvasRef}
                 dragElastic={0.05}
                 dragMomentum={false}
@@ -165,19 +192,26 @@ export const TreeWorkspace: React.FC<TreeWorkspaceProps> = ({
                 }}
                 className="z-10"
               >
-                {/* Reusable Double-click Node Card */}
                 <NodeCard
                   value={el.value}
-                  isSelected={isSelected}
-                  onSelect={() => onSelectNode(isSelected ? null : el.id)}
-                  onEditValue={(newVal) => onEditValue?.(el.id, newVal)}
+                  isSelected={isSelected && !isVisualizing}
+                  onSelect={() => {
+                    if (!isVisualizing) {
+                      onSelectNode(isSelected ? null : el.id);
+                    }
+                  }}
+                  onEditValue={(newVal) => {
+                    if (!isVisualizing) {
+                      onEditValue?.(el.id, newVal);
+                    }
+                  }}
                   size="sm"
-                  className="rounded-full"
+                  className={nodeClass}
                 />
                 
                 {/* Small indicator tag */}
                 <span className="text-[6px] text-[#4c258d] font-mono absolute -bottom-3 left-1/2 -translate-x-1/2 uppercase tracking-tighter select-none font-bold">
-                  {isRoot ? 'Root' : isSelected ? 'Sel' : ''}
+                  {isRoot ? 'Root' : isSelected && !isVisualizing ? 'Sel' : isActive ? 'Active' : ''}
                 </span>
               </motion.div>
             );
@@ -187,3 +221,4 @@ export const TreeWorkspace: React.FC<TreeWorkspaceProps> = ({
     </div>
   );
 };
+

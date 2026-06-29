@@ -113,6 +113,131 @@ router.post('/array/sort', (req: Request, res: Response) => {
       });
     }
     sortedIndices.push(n - 1);
+  } else if (algorithm === 'insertion') {
+    // Insertion Sort
+    for (let i = 1; i < n; i++) {
+      let key = currentElements[i];
+      let j = i - 1;
+
+      steps.push({
+        elements: JSON.parse(JSON.stringify(currentElements)),
+        compared: [i],
+        swapped: [],
+        sorted: [...sortedIndices],
+        description: `Selecting element at index ${i} (value: ${key.value}) as key to insert.`,
+      });
+
+      const keyVal = getVal(key);
+
+      while (j >= 0) {
+        steps.push({
+          elements: JSON.parse(JSON.stringify(currentElements)),
+          compared: [j, j + 1],
+          swapped: [],
+          sorted: [...sortedIndices],
+          description: `Comparing key (${key.value}) with element at index ${j} (${currentElements[j].value}).`,
+        });
+
+        if (getVal(currentElements[j]) > keyVal) {
+          currentElements[j + 1] = currentElements[j];
+          j--;
+
+          steps.push({
+            elements: JSON.parse(JSON.stringify(currentElements)),
+            compared: [j + 1, j + 2],
+            swapped: [j + 1, j + 2],
+            sorted: [...sortedIndices],
+            description: `Shifting element at index ${j + 2} right to index ${j + 1}.`,
+          });
+        } else {
+          break;
+        }
+      }
+      currentElements[j + 1] = key;
+      steps.push({
+        elements: JSON.parse(JSON.stringify(currentElements)),
+        compared: [j + 1],
+        swapped: [j + 1],
+        sorted: [...sortedIndices],
+        description: `Inserted key (${key.value}) at sorted position index ${j + 1}.`,
+      });
+    }
+    // Mark all as sorted
+    for (let idx = 0; idx < n; idx++) {
+      sortedIndices.push(idx);
+    }
+  } else if (algorithm === 'quick') {
+    // Quick Sort helper tracing
+    const traceQuickSort = (arr: DSNode[], low: number, high: number) => {
+      if (low < high) {
+        const pivotIdx = partition(arr, low, high);
+        traceQuickSort(arr, low, pivotIdx - 1);
+        traceQuickSort(arr, pivotIdx + 1, high);
+      } else if (low === high) {
+        if (!sortedIndices.includes(low)) sortedIndices.push(low);
+      }
+    };
+
+    const partition = (arr: DSNode[], low: number, high: number): number => {
+      const pivot = arr[high];
+      const pivotVal = getVal(pivot);
+
+      steps.push({
+        elements: JSON.parse(JSON.stringify(arr)),
+        compared: [high],
+        swapped: [],
+        sorted: [...sortedIndices],
+        description: `Choosing pivot at index ${high} (value: ${pivot.value}) for partition [${low}, ${high}].`,
+      });
+
+      let i = low - 1;
+
+      for (let j = low; j < high; j++) {
+        steps.push({
+          elements: JSON.parse(JSON.stringify(arr)),
+          compared: [j, high],
+          swapped: [],
+          sorted: [...sortedIndices],
+          description: `Comparing element at index ${j} (${arr[j].value}) with pivot (${pivot.value}).`,
+        });
+
+        if (getVal(arr[j]) < pivotVal) {
+          i++;
+          const temp = arr[i];
+          arr[i] = arr[j];
+          arr[j] = temp;
+
+          steps.push({
+            elements: JSON.parse(JSON.stringify(arr)),
+            compared: [i, j],
+            swapped: [i, j],
+            sorted: [...sortedIndices],
+            description: `Element ${arr[i].value} is smaller than pivot. Swapping it with element at index ${j}.`,
+          });
+        }
+      }
+
+      const temp = arr[i + 1];
+      arr[i + 1] = arr[high];
+      arr[high] = temp;
+
+      steps.push({
+        elements: JSON.parse(JSON.stringify(arr)),
+        compared: [i + 1, high],
+        swapped: [i + 1, high],
+        sorted: [...sortedIndices],
+        description: `Placing pivot at its correct sorted position at index ${i + 1}.`,
+      });
+
+      if (!sortedIndices.includes(i + 1)) sortedIndices.push(i + 1);
+      return i + 1;
+    };
+
+    traceQuickSort(currentElements, 0, n - 1);
+    // Mark remaining indices sorted
+    for (let idx = 0; idx < n; idx++) {
+      if (!sortedIndices.includes(idx)) sortedIndices.push(idx);
+    }
   } else {
     // Default to Bubble Sort
     let swappedAny;

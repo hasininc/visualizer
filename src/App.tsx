@@ -676,6 +676,8 @@ function App() {
                     >
                       <option value="bubble">Bubble Sort</option>
                       <option value="selection">Selection Sort</option>
+                      <option value="insertion">Insertion Sort</option>
+                      <option value="quick">Quick Sort</option>
                     </select>
                   </div>
                   <Button
@@ -935,7 +937,7 @@ function App() {
             )}
 
             {/* Embedded Active Canvas Workspace */}
-            <div className="flex-1 flex items-center justify-center relative z-10 w-full">
+            <div className="flex-1 flex items-start justify-center relative z-10 w-full pt-6">
               {renderActiveWorkspace()}
             </div>
 

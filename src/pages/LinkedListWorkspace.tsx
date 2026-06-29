@@ -34,14 +34,14 @@ export const LinkedListWorkspace: React.FC<LinkedListWorkspaceProps> = ({
   const isVisualizing = !!visualizationData;
 
   return (
-    <div className="flex flex-col items-center justify-center gap-8 w-full py-10">
+    <div className="flex flex-col items-center justify-start gap-4 w-full py-2">
       {elements.length === 0 ? (
         <div className="text-[#4c258d]/70 font-display font-medium text-sm select-none p-8 border border-dashed border-[#a38deb]/45 rounded-3xl">
           Linked List empty. Add nodes in the left panel!
         </div>
       ) : (
         <div className="flex flex-col gap-2 w-full max-w-2xl">
-          <div className="text-center text-[10px] text-[#4c258d]/80 font-black tracking-widest uppercase mb-4">
+          <div className="text-center text-[10px] text-[#4c258d]/80 font-black tracking-widest uppercase mb-2">
             {isVisualizing
               ? 'Searching node in list... Interactivity paused.'
               : 'Drag nodes horizontally to reorder • Double-click to edit'}

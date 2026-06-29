@@ -27,7 +27,7 @@ export const QueueWorkspace: React.FC<QueueWorkspaceProps> = ({
   onEditValue,
 }) => {
   return (
-    <div className="flex flex-col items-center justify-center gap-8 w-full py-10">
+    <div className="flex flex-col items-center justify-start gap-4 w-full py-2">
       {elements.length === 0 ? (
         <div className="text-[#4c258d]/70 font-display font-medium text-sm select-none p-8 border border-dashed border-[#a38deb]/45 rounded-3xl">
           Queue empty. Enqueue elements in the left panel!
@@ -35,7 +35,7 @@ export const QueueWorkspace: React.FC<QueueWorkspaceProps> = ({
       ) : (
         <div className="flex flex-col items-center w-full max-w-2xl">
           {/* Header instructions */}
-          <div className="text-center text-[10px] text-[#4c258d]/80 font-black tracking-widest uppercase mb-6 flex items-center justify-center gap-1">
+          <div className="text-center text-[10px] text-[#4c258d]/80 font-black tracking-widest uppercase mb-3 flex items-center justify-center gap-1">
             <ArrowLeft className="w-3.5 h-3.5" />
             <span>Drag elements to reorder • Double-click to edit</span>
             <ArrowLeft className="w-3.5 h-3.5" />

@@ -53,14 +53,14 @@ export const StackWorkspace: React.FC<StackWorkspaceProps> = ({
   }
 
   return (
-    <div className="flex flex-col items-center justify-center gap-6 w-full py-6">
+    <div className="flex flex-col items-center justify-start gap-4 w-full py-2">
       {elements.length === 0 && !isVisualizing ? (
         <div className="text-[#4c258d]/70 font-display font-medium text-sm select-none p-8 border border-dashed border-[#a38deb]/45 rounded-3xl">
           Stack empty. Push elements in the left panel!
         </div>
       ) : (
         <div className="flex flex-col items-center w-full max-w-xs">
-          <div className="text-center text-[10px] text-[#4c258d]/80 font-black tracking-widest uppercase mb-6">
+          <div className="text-center text-[10px] text-[#4c258d]/80 font-black tracking-widest uppercase mb-3">
             {isVisualizing
               ? 'Balancing validation in progress... Interactivity paused.'
               : 'Drag vertically to reorder stack • Double-click to edit'}

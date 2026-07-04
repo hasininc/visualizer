@@ -114,52 +114,52 @@ router.post('/array/sort', (req: Request, res: Response) => {
     }
     sortedIndices.push(n - 1);
   } else if (algorithm === 'insertion') {
-    // Insertion Sort
+    // Insertion Sort using swaps to keep elements unique
     for (let i = 1; i < n; i++) {
-      let key = currentElements[i];
-      let j = i - 1;
-
+      let j = i;
+      
       steps.push({
         elements: JSON.parse(JSON.stringify(currentElements)),
-        compared: [i],
+        compared: [j],
         swapped: [],
         sorted: [...sortedIndices],
-        description: `Selecting element at index ${i} (value: ${key.value}) as key to insert.`,
+        description: `Selecting element at index ${j} (value: ${currentElements[j].value}) as key to insert.`,
       });
 
-      const keyVal = getVal(key);
-
-      while (j >= 0) {
+      while (j > 0) {
         steps.push({
           elements: JSON.parse(JSON.stringify(currentElements)),
-          compared: [j, j + 1],
+          compared: [j - 1, j],
           swapped: [],
           sorted: [...sortedIndices],
-          description: `Comparing key (${key.value}) with element at index ${j} (${currentElements[j].value}).`,
+          description: `Comparing key (${currentElements[j].value}) with element at index ${j - 1} (${currentElements[j - 1].value}).`,
         });
 
-        if (getVal(currentElements[j]) > keyVal) {
-          currentElements[j + 1] = currentElements[j];
-          j--;
+        if (getVal(currentElements[j - 1]) > getVal(currentElements[j])) {
+          // Swap
+          const temp = currentElements[j];
+          currentElements[j] = currentElements[j - 1];
+          currentElements[j - 1] = temp;
 
           steps.push({
             elements: JSON.parse(JSON.stringify(currentElements)),
-            compared: [j + 1, j + 2],
-            swapped: [j + 1, j + 2],
+            compared: [j - 1, j],
+            swapped: [j - 1, j],
             sorted: [...sortedIndices],
-            description: `Shifting element at index ${j + 2} right to index ${j + 1}.`,
+            description: `Element at index ${j - 1} is greater than key. Swapping them to shift key left.`,
           });
+          j--;
         } else {
           break;
         }
       }
-      currentElements[j + 1] = key;
+      
       steps.push({
         elements: JSON.parse(JSON.stringify(currentElements)),
-        compared: [j + 1],
-        swapped: [j + 1],
+        compared: [j],
+        swapped: [j],
         sorted: [...sortedIndices],
-        description: `Inserted key (${key.value}) at sorted position index ${j + 1}.`,
+        description: `Key has reached its sorted position at index ${j}.`,
       });
     }
     // Mark all as sorted

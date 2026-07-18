@@ -10,11 +10,6 @@
   --color-pastel-bg: #ab96eb; /* Rich lavender background inspired by image */
   --color-pastel-dark: #250d4f; /* Deep violet text */
   --color-pastel-primary: #4c258d; /* Deep purple primary buttons */
-  --color-pastel-secondary: #a28ceb; /* Medium purple */
-  --color-pastel-lavender: #d0c4fc; /* Lilac cards */
-  --color-pastel-pink: #dfd7fc; /* Input boxes */
-  --color-pastel-card: #bdabfc; /* Main container background */
-  --color-pastel-border: #a38deb; /* Panel boundary grids */
 }
 
 /* Custom Base resets */

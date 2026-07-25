@@ -25,10 +25,10 @@ export const Button: React.FC<ButtonProps> = ({
   const baseStyles = 'inline-flex items-center justify-center gap-1.5 px-4.5 py-2 rounded-2xl font-bold font-display transition-all duration-300 text-sm focus:outline-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed select-none border';
   
   const variants = {
-    primary: 'bg-[#4c258d] text-[#ece8ff] shadow-md border-transparent hover:bg-[#3f1c7a] active:bg-[#36166a]',
-    secondary: 'bg-[#a28ceb] text-[#250d4f] border-[#947deb] hover:bg-[#9278e6] active:bg-[#8569db]',
-    ghost: 'text-[#250d4f] hover:bg-[#bdabfc]/60 border-transparent',
-    danger: 'bg-rose-700 text-[#ece8ff] border-transparent hover:bg-rose-850',
+    primary: 'bg-[var(--btn-primary-bg)] text-[var(--btn-primary-text)] shadow-md border-transparent hover:opacity-90 active:scale-95',
+    secondary: 'bg-[var(--btn-secondary-bg)] text-[var(--btn-secondary-text)] border-[var(--btn-secondary-border)] hover:bg-[var(--btn-secondary-hover)] active:scale-95',
+    ghost: 'text-[var(--btn-ghost-text)] hover:bg-[var(--btn-ghost-hover)] border-transparent',
+    danger: 'bg-rose-600 text-white border-transparent hover:bg-rose-700',
   };
 
   return (

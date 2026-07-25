@@ -36,12 +36,12 @@ export const ArrayWorkspace: React.FC<ArrayWorkspaceProps> = ({
   return (
     <div className="flex flex-col items-center justify-start gap-4 w-full py-2">
       {elements.length === 0 ? (
-        <div className="text-[#4c258d]/70 font-display font-medium text-sm select-none p-8 border border-dashed border-[#a38deb]/45 rounded-3xl">
+        <div className="text-[var(--text-muted)] font-display font-medium text-sm select-none p-8 border border-dashed border-[var(--empty-border)] rounded-3xl transition-colors duration-300">
           Array empty. Add elements in the left panel!
         </div>
       ) : (
         <div className="flex flex-col gap-2 w-full max-w-2xl">
-          <div className="text-center text-[10px] text-[#4c258d]/80 font-black tracking-widest uppercase mb-2">
+          <div className="text-center text-[10px] text-[var(--text-muted)] font-black tracking-widest uppercase mb-2 transition-colors duration-300">
             {isVisualizing
               ? 'Sorting algorithm in progress... Interactivity paused.'
               : 'Drag elements horizontally to reorder • Double-click to edit value'}
@@ -57,11 +57,11 @@ export const ArrayWorkspace: React.FC<ArrayWorkspaceProps> = ({
 
                 let cardClass = '';
                 if (isSwapped) {
-                  cardClass = 'ring-4 ring-rose-500 ring-offset-2 bg-rose-200 border-rose-500 text-rose-950 animate-bounce';
+                  cardClass = 'ring-4 ring-rose-500 ring-offset-2 bg-rose-500 border-rose-600 text-white animate-bounce';
                 } else if (isCompared) {
-                  cardClass = 'ring-4 ring-amber-500 ring-offset-2 bg-[#fdf2d5] border-amber-500 text-amber-950';
+                  cardClass = 'ring-4 ring-amber-500 ring-offset-2 bg-amber-400 border-amber-600 text-amber-950';
                 } else if (isSorted) {
-                  cardClass = 'bg-emerald-300 border-emerald-500 text-emerald-950 font-extrabold shadow-md pointer-events-none';
+                  cardClass = 'bg-emerald-500 border-emerald-600 text-white font-extrabold shadow-md pointer-events-none';
                 }
 
                 return (
@@ -71,7 +71,7 @@ export const ArrayWorkspace: React.FC<ArrayWorkspaceProps> = ({
                     transition={{ type: 'spring', stiffness: 300, damping: 25 }}
                     className="flex flex-col items-center gap-1.5 relative"
                   >
-                    <span className="text-[10px] font-bold font-mono text-[#4c258d] select-none">
+                    <span className="text-[10px] font-bold font-mono text-[var(--text-muted)] select-none transition-colors duration-300">
                       Index {idx}
                     </span>
                     <NodeCard
@@ -100,7 +100,7 @@ export const ArrayWorkspace: React.FC<ArrayWorkspaceProps> = ({
                     className="flex flex-col items-center gap-1.5 relative cursor-grab active:cursor-grabbing"
                     whileDrag={{ scale: 1.08, zIndex: 10 }}
                   >
-                    <span className="text-[10px] font-bold font-mono text-[#4c258d] select-none">
+                    <span className="text-[10px] font-bold font-mono text-[var(--text-muted)] select-none transition-colors duration-300">
                       Index {idx}
                     </span>
                     <NodeCard
@@ -119,4 +119,3 @@ export const ArrayWorkspace: React.FC<ArrayWorkspaceProps> = ({
     </div>
   );
 };
-

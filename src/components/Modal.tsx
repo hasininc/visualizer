@@ -61,22 +61,22 @@ export const Modal: React.FC<ModalProps> = ({
             transition={{ type: 'spring', duration: 0.4 }}
             className={`w-full ${sizes[size]} z-10`}
           >
-            <Card className="glass-panel border-white/10 shadow-2xl relative flex flex-col p-0 overflow-hidden">
+            <Card className="glass-panel border-[var(--panel-border)] shadow-2xl relative flex flex-col p-0 overflow-hidden">
               {/* Header */}
-              <div className="flex items-center justify-between px-6 py-4 border-b border-white/5 bg-[#0c0c10]/80">
-                <h3 className="text-base font-bold text-white font-display">
+              <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--panel-border)] bg-[var(--modal-header-bg)] transition-colors duration-300">
+                <h3 className="text-base font-bold text-[var(--modal-header-text)] font-display">
                   {title}
                 </h3>
                 <button
                   onClick={onClose}
-                  className="text-zinc-400 hover:text-white p-1 rounded-lg hover:bg-white/5 transition-all cursor-pointer"
+                  className="text-zinc-400 hover:text-white p-1 rounded-lg hover:bg-white/10 transition-all cursor-pointer"
                 >
                   <X className="w-4.5 h-4.5" />
                 </button>
               </div>
 
               {/* Body */}
-              <div className="p-6 overflow-y-auto max-h-[70vh] text-zinc-300 text-sm leading-relaxed">
+              <div className="p-6 overflow-y-auto max-h-[70vh] text-[var(--modal-body-text)] text-sm leading-relaxed transition-colors duration-300">
                 {children}
               </div>
             </Card>

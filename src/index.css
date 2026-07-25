@@ -6,15 +6,96 @@
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
   --font-display: 'Fredoka', 'Outfit', system-ui, sans-serif;
   --font-mono: 'Fira Code', monospace;
-  
-  --color-pastel-bg: #ab96eb; /* Rich lavender background inspired by image */
-  --color-pastel-dark: #250d4f; /* Deep violet text */
-  --color-pastel-primary: #4c258d; /* Deep purple primary buttons */
-  --color-pastel-secondary: #a28ceb; /* Medium purple */
-  --color-pastel-lavender: #d0c4fc; /* Lilac cards */
-  --color-pastel-pink: #dfd7fc; /* Input boxes */
-  --color-pastel-card: #bdabfc; /* Main container background */
-  --color-pastel-border: #a38deb; /* Panel boundary grids */
+}
+
+/* Light Theme Variables (Default) */
+:root {
+  --bg-main: #ab96eb;
+  --text-main: #250d4f;
+  --text-muted: rgba(76, 37, 141, 0.8);
+  --text-subtle: rgba(37, 13, 79, 0.6);
+  --panel-bg: #bdabfc;
+  --panel-bg-95: rgba(189, 171, 252, 0.95);
+  --panel-glow-bg: #c2b2ff;
+  --panel-border: #a38deb;
+  --panel-border-glow: #4a238a;
+  --input-bg: #dfd7fc;
+  --input-border: #a38deb;
+  --input-text: #250d4f;
+  --input-placeholder: rgba(37, 13, 79, 0.45);
+  --btn-primary-bg: #4c258d;
+  --btn-primary-text: #ece8ff;
+  --btn-primary-hover: #3f1c7a;
+  --btn-secondary-bg: #a28ceb;
+  --btn-secondary-text: #250d4f;
+  --btn-secondary-border: #947deb;
+  --btn-secondary-hover: #9278e6;
+  --btn-ghost-text: #250d4f;
+  --btn-ghost-hover: rgba(189, 171, 252, 0.6);
+  --node-bg: #d0c4fc;
+  --node-border: #b5a1eb;
+  --node-border-hover: #4a238a;
+  --node-text: #250d4f;
+  --node-selected-bg: #4a238a;
+  --node-selected-border: #4a238a;
+  --node-selected-text: #f3f0fd;
+  --node-editing-bg: #dfd7fc;
+  --canvas-bg: rgba(227, 220, 247, 0.3);
+  --canvas-border: rgba(163, 141, 235, 0.5);
+  --grid-line: #9e85eb;
+  --canvas-grid-line: rgba(163, 141, 235, 0.15);
+  --link-stroke: #4c258d;
+  --scrollbar-track: #bdabfc;
+  --scrollbar-thumb: #947eeb;
+  --scrollbar-thumb-hover: #7e65df;
+  --ambient-light-1: rgba(208, 196, 252, 0.25);
+  --ambient-light-2: rgba(74, 35, 138, 0.15);
+  --empty-border: rgba(163, 141, 235, 0.45);
+}
+
+/* Dark Theme Variables (Obsidian-Violet High Contrast) */
+html.dark {
+  --bg-main: #0c0915;
+  --text-main: #f3f0ff;
+  --text-muted: #c4b5fd;
+  --text-subtle: #a78bfa;
+  --panel-bg: #161226;
+  --panel-bg-95: rgba(22, 18, 38, 0.95);
+  --panel-glow-bg: #221b3a;
+  --panel-border: #382c54;
+  --panel-border-glow: #8b5cf6;
+  --input-bg: #211a36;
+  --input-border: #4a3b6e;
+  --input-text: #f3f0ff;
+  --input-placeholder: #8b7ab8;
+  --btn-primary-bg: #7c3aed;
+  --btn-primary-text: #ffffff;
+  --btn-primary-hover: #6d28d9;
+  --btn-secondary-bg: #2d234a;
+  --btn-secondary-text: #e9d5ff;
+  --btn-secondary-border: #52407d;
+  --btn-secondary-hover: #3c2f63;
+  --btn-ghost-text: #e9d5ff;
+  --btn-ghost-hover: rgba(76, 58, 126, 0.5);
+  --node-bg: #261f3d;
+  --node-border: #4c3b7a;
+  --node-border-hover: #a78bfa;
+  --node-text: #f3f0ff;
+  --node-selected-bg: #7c3aed;
+  --node-selected-border: #8b5cf6;
+  --node-selected-text: #ffffff;
+  --node-editing-bg: #211a36;
+  --canvas-bg: rgba(26, 20, 44, 0.6);
+  --canvas-border: rgba(82, 64, 125, 0.6);
+  --grid-line: #221a36;
+  --canvas-grid-line: rgba(167, 139, 250, 0.12);
+  --link-stroke: #a78bfa;
+  --scrollbar-track: #161226;
+  --scrollbar-thumb: #382c54;
+  --scrollbar-thumb-hover: #52407d;
+  --ambient-light-1: rgba(124, 58, 237, 0.15);
+  --ambient-light-2: rgba(167, 139, 250, 0.1);
+  --empty-border: rgba(82, 64, 125, 0.6);
 }
 
 /* Custom Base resets */
@@ -23,37 +104,40 @@ html, body, #root {
   padding: 0;
   width: 100%;
   min-height: 100vh;
-  background-color: #ab96eb;
-  color: #250d4f;
+  background-color: var(--bg-main);
+  color: var(--text-main);
   font-family: var(--font-sans);
   overflow-x: hidden;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Custom Utilities for Lavender Theme */
+/* Custom Utilities for Dynamic Theme */
 .bg-grid-pattern {
   background-size: 30px 30px;
   background-image: 
-    linear-gradient(to right, #9e85eb 1px, transparent 1px),
-    linear-gradient(to bottom, #9e85eb 1px, transparent 1px);
+    linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
 }
 
 .bg-canvas-grid-pattern {
   background-size: 30px 30px;
   background-image: 
-    linear-gradient(to right, rgba(163, 141, 235, 0.15) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(163, 141, 235, 0.15) 1px, transparent 1px);
+    linear-gradient(to right, var(--canvas-grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--canvas-grid-line) 1px, transparent 1px);
 }
 
 .glass-panel {
-  background: #bdabfc;
-  border: 1px solid #a38deb;
-  box-shadow: 0 10px 30px -10px rgba(37, 13, 79, 0.15);
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.25);
+  transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .glass-panel-glow {
-  background: #c2b2ff;
-  border: 2px solid #4a238a;
-  box-shadow: 0 0 20px rgba(74, 35, 138, 0.25), 0 10px 30px -10px rgba(37, 13, 79, 0.15);
+  background: var(--panel-glow-bg);
+  border: 2px solid var(--panel-border-glow);
+  box-shadow: 0 0 20px rgba(124, 58, 237, 0.25), 0 10px 30px -10px rgba(0, 0, 0, 0.25);
+  transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .glow-card {
@@ -63,8 +147,8 @@ html, body, #root {
 
 .glow-card:hover {
   transform: translateY(-2px) scale(1.01);
-  box-shadow: 0 15px 35px -10px rgba(74, 35, 138, 0.22);
-  border-color: #4a238a;
+  box-shadow: 0 15px 35px -10px rgba(124, 58, 237, 0.3);
+  border-color: var(--panel-border-glow);
 }
 
 /* Custom Scrollbar */
@@ -74,25 +158,25 @@ html, body, #root {
 }
 
 ::-webkit-scrollbar-track {
-  background: #bdabfc;
+  background: var(--scrollbar-track);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #947eeb;
+  background: var(--scrollbar-thumb);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #7e65df;
+  background: var(--scrollbar-thumb-hover);
 }
 
 /* Active blinking animations */
 @keyframes cutePulse {
   0%, 100% {
-    box-shadow: 0 0 0 0px rgba(74, 35, 138, 0.3);
+    box-shadow: 0 0 0 0px rgba(124, 58, 237, 0.4);
   }
   50% {
-    box-shadow: 0 0 0 8px rgba(74, 35, 138, 0.15);
+    box-shadow: 0 0 0 8px rgba(124, 58, 237, 0.15);
   }
 }
 

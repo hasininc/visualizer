@@ -80,10 +80,10 @@ export const NodeCard: React.FC<NodeCardProps> = ({
         ${sizeClasses[size]}
         ${
           isSelected && !isEditing
-            ? 'bg-[#4a238a] border-[#4a238a] text-[#f3f0fd] shadow-md active-glow'
+            ? 'bg-[var(--node-selected-bg)] border-[var(--node-selected-border)] text-[var(--node-selected-text)] shadow-md active-glow'
             : isEditing
-            ? 'bg-[#dfd7fc] border-[#4a238a] ring-2 ring-[#bdabfc]'
-            : 'bg-[#d0c4fc] border-[#b5a1eb] hover:border-[#4a238a] text-[#250d4f] shadow-sm'
+            ? 'bg-[var(--node-editing-bg)] border-[var(--node-selected-border)] ring-2 ring-[var(--panel-border)] text-[var(--input-text)]'
+            : 'bg-[var(--node-bg)] border-[var(--node-border)] hover:border-[var(--node-border-hover)] text-[var(--node-text)] shadow-sm'
         }
         ${className}
       `}
@@ -98,7 +98,7 @@ export const NodeCard: React.FC<NodeCardProps> = ({
           onBlur={handleSave}
           onKeyDown={handleKeyDown}
           onClick={(e) => e.stopPropagation()}
-          className="w-full h-full text-center bg-transparent outline-none text-[#250d4f] font-bold border-none p-0 focus:ring-0"
+          className="w-full h-full text-center bg-transparent outline-none text-[var(--input-text)] font-bold border-none p-0 focus:ring-0"
         />
       ) : (
         <span>{value}</span>

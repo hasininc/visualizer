@@ -126,7 +126,7 @@ export const TreeWorkspace: React.FC<TreeWorkspaceProps> = ({
         y1={y1}
         x2={x2}
         y2={y2}
-        stroke={isPathLink ? '#10b981' : '#4c258d'}
+        stroke={isPathLink ? '#10b981' : 'var(--link-stroke)'}
         strokeWidth={isPathLink ? '3.5' : '2.5'}
         strokeDasharray={isPathLink ? '' : '4 4'}
         strokeLinecap="round"
@@ -137,7 +137,7 @@ export const TreeWorkspace: React.FC<TreeWorkspaceProps> = ({
 
   return (
     <div className="flex flex-col items-center w-full h-full relative p-4 gap-4 select-none">
-      <div className="text-center text-[10px] text-[#4c258d]/80 font-black tracking-widest uppercase z-10 px-6">
+      <div className="text-center text-[10px] text-[var(--text-muted)] font-black tracking-widest uppercase z-10 px-6 transition-colors duration-300">
         {isVisualizing
           ? 'Tree algorithm in progress... Interactivity paused.'
           : 'Auto-spaces parent & children • Drag freely • Double-click to edit'}
@@ -145,7 +145,7 @@ export const TreeWorkspace: React.FC<TreeWorkspaceProps> = ({
 
       <div
         ref={canvasRef}
-        className="w-full h-[320px] bg-[#e3dcf7]/30 rounded-3xl border border-[#a38deb]/50 relative overflow-hidden flex items-center justify-center shadow-inner"
+        className="w-full h-[320px] bg-[var(--canvas-bg)] rounded-3xl border border-[var(--canvas-border)] relative overflow-hidden flex items-center justify-center shadow-inner transition-colors duration-300"
       >
         {/* SVG Links Overlay */}
         <svg className="absolute inset-0 w-full h-full pointer-events-none z-0">
@@ -153,7 +153,7 @@ export const TreeWorkspace: React.FC<TreeWorkspaceProps> = ({
         </svg>
 
         {elements.length === 0 ? (
-          <div className="text-[#4c258d]/70 font-display font-medium text-sm select-none z-10">
+          <div className="text-[var(--text-muted)] font-display font-medium text-sm select-none z-10 transition-colors duration-300">
             Tree empty. Add root node in the left panel!
           </div>
         ) : (
@@ -167,9 +167,9 @@ export const TreeWorkspace: React.FC<TreeWorkspaceProps> = ({
 
             let nodeClass = 'rounded-full';
             if (isActive) {
-              nodeClass += ' ring-4 ring-purple-600 ring-offset-2 bg-purple-700 border-purple-800 text-white animate-pulse';
+              nodeClass += ' ring-4 ring-purple-500 ring-offset-2 bg-purple-600 border-purple-700 text-white animate-pulse';
             } else if (isVisited) {
-              nodeClass += ' bg-emerald-200 border-emerald-500 text-emerald-950 shadow-sm';
+              nodeClass += ' bg-emerald-500 border-emerald-600 text-white shadow-sm';
             }
 
             return (
@@ -210,7 +210,7 @@ export const TreeWorkspace: React.FC<TreeWorkspaceProps> = ({
                 />
                 
                 {/* Small indicator tag */}
-                <span className="text-[6px] text-[#4c258d] font-mono absolute -bottom-3 left-1/2 -translate-x-1/2 uppercase tracking-tighter select-none font-bold">
+                <span className="text-[6px] text-[var(--text-muted)] font-mono absolute -bottom-3 left-1/2 -translate-x-1/2 uppercase tracking-tighter select-none font-bold transition-colors duration-300">
                   {isRoot ? 'Root' : isSelected && !isVisualizing ? 'Sel' : isActive ? 'Active' : ''}
                 </span>
               </motion.div>
@@ -221,4 +221,3 @@ export const TreeWorkspace: React.FC<TreeWorkspaceProps> = ({
     </div>
   );
 };
-

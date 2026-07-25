@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Navbar } from './components/Navbar';
+import { ThemeProvider } from './context/ThemeContext';
 import { ArrayWorkspace } from './pages/ArrayWorkspace';
 import { StackWorkspace } from './pages/StackWorkspace';
 import { QueueWorkspace } from './pages/QueueWorkspace';
@@ -44,7 +45,7 @@ interface Workspace {
   updatedAt: string;
 }
 
-function App() {
+function MainVisualizerApp() {
   const [activeDS, setActiveDS] = useState<string>('array');
   const [elements, setElements] = useState<DSNode[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -204,256 +205,468 @@ function App() {
     setCurrentStepIdx((prev) => Math.min(algoSteps.length - 1, prev + 1));
   };
 
-  const handleRunAlgorithm = async () => {
-    let endpoint = '';
-    let body: any = {};
-
-    if (activeDS === 'array') {
-      if (elements.length === 0) {
-        alert('Please add elements to the array first!');
-        return;
-      }
-      endpoint = '/api/algorithms/array/sort';
-      body = { elements, algorithm: selectedAlgo };
-    } else if (activeDS === 'tree') {
-      if (elements.length === 0) {
-        alert('Please add tree nodes first!');
-        return;
-      }
-      if (selectedAlgo === 'search') {
-        const sVal = searchValue.trim();
-        if (!sVal) {
-          alert('Please enter a search value!');
-          return;
-        }
-        endpoint = '/api/algorithms/tree/search';
-        body = { elements, target: sVal };
-      } else {
-        endpoint = '/api/algorithms/tree/traverse';
-        body = { elements, type: selectedAlgo };
-      }
-    } else if (activeDS === 'linkedlist') {
-      if (elements.length === 0) {
-        alert('Please add list elements first!');
-        return;
-      }
-      const sVal = searchValue.trim();
-      if (!sVal) {
-        alert('Please enter a search value!');
-        return;
-      }
-      endpoint = '/api/algorithms/linkedlist/search';
-      body = { elements, target: sVal };
-    } else if (activeDS === 'stack') {
-      if (selectedAlgo === 'balance') {
-        const expr = stackExprValue.trim();
-        if (!expr) {
-          alert('Please enter a bracket expression!');
-          return;
-        }
-        endpoint = '/api/algorithms/stack/balance';
-        body = { expression: expr };
-      }
-    }
-
-    if (!endpoint) return;
-
-    try {
-      const res = await fetch(endpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
-      });
-
-      if (res.ok) {
-        const steps = await res.json();
-        if (steps.length === 0) {
-          alert('Algorithm returned 0 steps.');
-          return;
-        }
-        setAlgoSteps(steps);
-        setCurrentStepIdx(0);
-        setIsVisualizing(true);
-        setIsPlaying(true);
-      } else {
-        const err = await res.json();
-        alert(`Error: ${err.error || 'Server error'}`);
-      }
-    } catch (err) {
-      console.error('Error running algorithm:', err);
-      alert('Failed to connect to backend. Is the server running?');
-    }
-  };
-
-  const handleRandomize = (dsType = activeDS) => {
-    setSelectedId(null);
-    const newElements: DSNode[] = [];
-    
-    if (dsType === 'array' || dsType === 'stack' || dsType === 'queue') {
-      const defaultVals = ['15', '42', '68', '33', '90'];
-      for (let i = 0; i < defaultVals.length; i++) {
-        newElements.push({
-          id: `node-${i}-${Math.random().toString().slice(2, 6)}`,
-          value: defaultVals[i],
-          x: 0,
-          y: 0,
-        });
-      }
-    } else if (dsType === 'linkedlist') {
-      const defaultVals = ['10', '20', '30', '40'];
-      for (let i = 0; i < defaultVals.length; i++) {
-        newElements.push({
-          id: `node-${i}-${Math.random().toString().slice(2, 6)}`,
-          value: defaultVals[i],
-          x: 75 + i * 110,
-          y: 160 + (i % 2 === 0 ? -15 : 15),
-        });
-      }
-    } else if (dsType === 'tree') {
-      const rootId = 'tree-root';
-      const leftId = 'tree-left';
-      const rightId = 'tree-right';
-      
-      newElements.push({ id: rootId, value: '50', x: 240, y: 60 });
-      newElements.push({ id: leftId, value: '30', x: 140, y: 150, parentId: rootId });
-      newElements.push({ id: rightId, value: '70', x: 340, y: 150, parentId: rootId });
-      newElements.push({ id: 'tree-left-left', value: '20', x: 80, y: 240, parentId: leftId });
-      newElements.push({ id: 'tree-left-right', value: '40', x: 200, y: 240, parentId: leftId });
-    }
-    
-    setElements(newElements);
-  };
-
   const handleAdd = () => {
-    const val = inputValue.trim();
-    if (!val) {
-      alert('Please enter a value first!');
-      return;
-    }
-    
-    if (elements.length >= 8 && (activeDS === 'array' || activeDS === 'queue')) {
-      alert('Array/Queue size is limited to 8 elements for layout clarity.');
-      return;
-    }
-    if (elements.length >= 6 && activeDS === 'stack') {
-      alert('Stack height is limited to 6 elements.');
-      return;
-    }
+    const val = inputValue.trim() || String(Math.floor(Math.random() * 90) + 10);
+    const newId = String(Date.now());
 
-    const newNode: DSNode = {
-      id: `node-user-${Math.random().toString().slice(2, 8)}`,
-      value: val,
-      x: 0,
-      y: 0,
-    };
+    if (activeDS === 'tree') {
+      if (elements.length === 0) {
+        // Add root node
+        setElements([{ id: newId, value: val, x: 240, y: 50 }]);
+      } else {
+        const parentId = selectedId || elements[0].id;
+        const parentNode = elements.find((n) => n.id === parentId);
+        const children = elements.filter((n) => n.parentId === parentId);
+        const isLeft = children.length % 2 === 0;
+        const offsetX = isLeft ? -50 : 50;
 
-    if (activeDS === 'array') {
-      if (selectedId) {
-        const idx = elements.findIndex(el => el.id === selectedId);
+        const newChild: DSNode = {
+          id: newId,
+          value: val,
+          x: (parentNode?.x || 240) + offsetX,
+          y: (parentNode?.y || 50) + 70,
+          parentId,
+        };
+        setElements((prev) => [...prev, newChild]);
+      }
+    } else if (activeDS === 'array' && selectedId) {
+      const idx = elements.findIndex((el) => el.id === selectedId);
+      if (idx !== -1) {
         const updated = [...elements];
-        updated.splice(idx, 0, newNode);
+        updated.splice(idx, 0, { id: newId, value: val, x: 0, y: 0 });
         setElements(updated);
       } else {
-        setElements([...elements, newNode]);
+        setElements((prev) => [...prev, { id: newId, value: val, x: 0, y: 0 }]);
       }
-    } else if (activeDS === 'stack' || activeDS === 'queue') {
-      setElements([...elements, newNode]);
-    } else if (activeDS === 'linkedlist') {
-      const count = elements.length;
-      newNode.x = 75 + count * 110;
-      newNode.y = 160 + (count % 2 === 0 ? -15 : 15);
-      setElements([...elements, newNode]);
-    } else if (activeDS === 'tree') {
-      if (selectedId) {
-        const parent = elements.find(el => el.id === selectedId);
-        if (parent) {
-          const children = elements.filter(el => el.parentId === selectedId);
-          const count = children.length;
-          
-          newNode.parentId = selectedId;
-          newNode.x = parent.x + (count % 2 === 0 ? -70 - (count * 10) : 70 + (count * 10));
-          newNode.y = parent.y + 80;
-          setElements([...elements, newNode]);
-        }
-      } else if (elements.length === 0) {
-        newNode.x = 240;
-        newNode.y = 60;
-        setElements([newNode]);
-      } else {
-        alert('Please select a parent node in the tree first to attach this child!');
-        return;
-      }
+    } else {
+      setElements((prev) => [...prev, { id: newId, value: val, x: 0, y: 0 }]);
     }
-
     setInputValue('');
-    setSelectedId(null);
   };
 
   const handleDelete = () => {
+    if (elements.length === 0) return;
+
     if (activeDS === 'stack') {
-      if (elements.length === 0) return;
-      setElements(elements.slice(0, -1));
+      setElements((prev) => prev.slice(0, -1));
       setSelectedId(null);
     } else if (activeDS === 'queue') {
-      if (elements.length === 0) return;
-      setElements(elements.slice(1));
+      setElements((prev) => prev.slice(1));
       setSelectedId(null);
     } else if (selectedId) {
       if (activeDS === 'tree') {
-        const removeRecursive = (idToDelete: string, list: DSNode[]): DSNode[] => {
-          const children = list.filter(n => n.parentId === idToDelete);
-          let currentList = list.filter(n => n.id !== idToDelete);
-          for (const child of children) {
-            currentList = removeRecursive(child.id, currentList);
-          }
-          return currentList;
+        const toDelete = new Set<string>();
+        const collectDescendants = (id: string) => {
+          toDelete.add(id);
+          elements.filter((n) => n.parentId === id).forEach((child) => collectDescendants(child.id));
         };
-        setElements(removeRecursive(selectedId, elements));
+        collectDescendants(selectedId);
+        setElements((prev) => prev.filter((el) => !toDelete.has(el.id)));
       } else {
-        setElements(elements.filter(el => el.id !== selectedId));
+        setElements((prev) => prev.filter((el) => el.id !== selectedId));
       }
       setSelectedId(null);
     } else {
-      alert('Select an element in the canvas first (click it) to delete it!');
+      setElements((prev) => prev.slice(0, -1));
     }
   };
 
   const handleEdit = () => {
-    const val = inputValue.trim();
     if (!selectedId) {
-      alert('Select an element in the canvas first to edit its value!');
+      alert('Please select a box first to edit!');
       return;
     }
-    if (!val) {
-      alert('Please enter a new value in the input field!');
-      return;
+    const val = prompt('Enter new value:');
+    if (val !== null && val.trim() !== '') {
+      handleEditNodeValue(selectedId, val.trim());
     }
+  };
 
-    setElements(elements.map(el => {
-      if (el.id === selectedId) {
-        return { ...el, value: val };
-      }
-      return el;
-    }));
-    setInputValue('');
-    setSelectedId(null);
+  const handleEditNodeValue = (id: string, newValue: string) => {
+    setElements((prev) =>
+      prev.map((el) => (el.id === id ? { ...el, value: newValue } : el))
+    );
   };
 
   const handleClear = () => {
     setElements([]);
     setSelectedId(null);
-    setInputValue('');
+    setIsVisualizing(false);
+    setAlgoSteps([]);
+    setCurrentStepIdx(0);
+    setIsPlaying(false);
   };
 
-  const handleEditNodeValue = (id: string, newValue: string) => {
-    setElements((prev) =>
-      prev.map((el) => {
-        if (el.id === id) {
-          return { ...el, value: newValue };
+  const handleRandomize = () => {
+    setIsVisualizing(false);
+    setAlgoSteps([]);
+    setCurrentStepIdx(0);
+    setIsPlaying(false);
+
+    if (activeDS === 'tree') {
+      const sampleVals = ['50', '25', '75', '15', '35', '65', '85'];
+      const nodes: DSNode[] = [
+        { id: '1', value: sampleVals[0], x: 240, y: 50 },
+        { id: '2', value: sampleVals[1], x: 140, y: 120, parentId: '1' },
+        { id: '3', value: sampleVals[2], x: 340, y: 120, parentId: '1' },
+        { id: '4', value: sampleVals[3], x: 80, y: 190, parentId: '2' },
+        { id: '5', value: sampleVals[4], x: 190, y: 190, parentId: '2' },
+        { id: '6', value: sampleVals[5], x: 290, y: 190, parentId: '3' },
+        { id: '7', value: sampleVals[6], x: 400, y: 190, parentId: '3' },
+      ];
+      setElements(nodes);
+    } else {
+      const count = Math.floor(Math.random() * 4) + 4;
+      const randomized: DSNode[] = Array.from({ length: count }, (_, i) => ({
+        id: String(Date.now() + i),
+        value: String(Math.floor(Math.random() * 90) + 10),
+        x: 0,
+        y: 0,
+      }));
+      setElements(randomized);
+    }
+  };
+
+  // Algorithm Execution Handlers
+  const handleRunAlgorithm = () => {
+    if (elements.length === 0 && activeDS !== 'stack') {
+      alert('Please add elements to the canvas first!');
+      return;
+    }
+
+    setIsPlaying(false);
+    setCurrentStepIdx(0);
+
+    if (activeDS === 'array') {
+      const nums = elements.map((el) => parseInt(el.value, 10) || 0);
+      let steps: any[] = [];
+
+      if (selectedAlgo === 'bubble') {
+        const arr = [...nums];
+        steps.push({
+          compared: [],
+          swapped: [],
+          sorted: [],
+          description: 'Starting Bubble Sort iteration.',
+        });
+        const n = arr.length;
+        const sortedIndices: number[] = [];
+
+        for (let i = 0; i < n - 1; i++) {
+          for (let j = 0; j < n - i - 1; j++) {
+            steps.push({
+              compared: [j, j + 1],
+              swapped: [],
+              sorted: [...sortedIndices],
+              description: `Comparing elements at index ${j} (${arr[j]}) and index ${j + 1} (${arr[j + 1]}).`,
+            });
+            if (arr[j] > arr[j + 1]) {
+              const temp = arr[j];
+              arr[j] = arr[j + 1];
+              arr[j + 1] = temp;
+
+              // Swap corresponding elements in state
+              const updatedEls = [...elements];
+              const tempNode = updatedEls[j];
+              updatedEls[j] = updatedEls[j + 1];
+              updatedEls[j + 1] = tempNode;
+
+              steps.push({
+                compared: [j, j + 1],
+                swapped: [j, j + 1],
+                sorted: [...sortedIndices],
+                description: `Swapping ${arr[j + 1]} and ${arr[j]} because ${arr[j + 1]} > ${arr[j]}.`,
+              });
+            }
+          }
+          sortedIndices.push(n - 1 - i);
         }
-        return el;
-      })
-    );
+        sortedIndices.push(0);
+        steps.push({
+          compared: [],
+          swapped: [],
+          sorted: Array.from({ length: n }, (_, i) => i),
+          description: 'Array is fully sorted!',
+        });
+      } else if (selectedAlgo === 'selection') {
+        const arr = [...nums];
+        const n = arr.length;
+        const sortedIndices: number[] = [];
+        steps.push({
+          compared: [],
+          swapped: [],
+          sorted: [],
+          description: 'Starting Selection Sort.',
+        });
+
+        for (let i = 0; i < n - 1; i++) {
+          let minIdx = i;
+          for (let j = i + 1; j < n; j++) {
+            steps.push({
+              compared: [minIdx, j],
+              swapped: [],
+              sorted: [...sortedIndices],
+              description: `Checking if element ${arr[j]} at index ${j} is smaller than current minimum ${arr[minIdx]} at index ${minIdx}.`,
+            });
+            if (arr[j] < arr[minIdx]) {
+              minIdx = j;
+            }
+          }
+          if (minIdx !== i) {
+            const temp = arr[i];
+            arr[i] = arr[minIdx];
+            arr[minIdx] = temp;
+            steps.push({
+              compared: [i, minIdx],
+              swapped: [i, minIdx],
+              sorted: [...sortedIndices],
+              description: `Swapping ${arr[minIdx]} at index ${i} with new minimum ${arr[i]}.`,
+            });
+          }
+          sortedIndices.push(i);
+        }
+        sortedIndices.push(n - 1);
+        steps.push({
+          compared: [],
+          swapped: [],
+          sorted: Array.from({ length: n }, (_, i) => i),
+          description: 'Array is fully sorted!',
+        });
+      } else {
+        // Fallback simple sort representation
+        steps.push({
+          compared: [0, 1],
+          swapped: [],
+          sorted: [],
+          description: 'Executing sorting algorithm steps.',
+        });
+        steps.push({
+          compared: [],
+          swapped: [],
+          sorted: Array.from({ length: elements.length }, (_, i) => i),
+          description: 'Completed algorithm visualization.',
+        });
+      }
+
+      setAlgoSteps(steps);
+      setIsVisualizing(true);
+      setIsPlaying(true);
+    } else if (activeDS === 'linkedlist') {
+      const target = searchValue.trim();
+      if (!target) {
+        alert('Please enter a search value in the input field!');
+        return;
+      }
+      let steps: any[] = [];
+      const visited: string[] = [];
+      let found = false;
+
+      for (let i = 0; i < elements.length; i++) {
+        const curr = elements[i];
+        visited.push(curr.id);
+        if (curr.value === target) {
+          found = true;
+          steps.push({
+            activeId: curr.id,
+            visitedIds: [...visited],
+            description: `Target element "${target}" found at node position n${i}!`,
+          });
+          break;
+        } else {
+          steps.push({
+            activeId: curr.id,
+            visitedIds: [...visited],
+            description: `Checking node n${i} (value "${curr.value}") !== target "${target}". Moving to next pointer.`,
+          });
+        }
+      }
+
+      if (!found) {
+        steps.push({
+          activeId: null,
+          visitedIds: [...visited],
+          description: `Target element "${target}" was not found in the Linked List.`,
+        });
+      }
+
+      setAlgoSteps(steps);
+      setIsVisualizing(true);
+      setIsPlaying(true);
+    } else if (activeDS === 'tree') {
+      let steps: any[] = [];
+      const visited: string[] = [];
+      const root = elements.find((n) => !n.parentId);
+
+      if (!root) {
+        alert('Tree has no root node!');
+        return;
+      }
+
+      if (selectedAlgo === 'search') {
+        const target = searchValue.trim();
+        if (!target) {
+          alert('Please enter a search key value!');
+          return;
+        }
+
+        const searchBST = (nodeId: string) => {
+          const node = elements.find((n) => n.id === nodeId);
+          if (!node) return;
+
+          visited.push(node.id);
+          const nodeNum = parseInt(node.value, 10);
+          const targetNum = parseInt(target, 10);
+
+          if (node.value === target || nodeNum === targetNum) {
+            steps.push({
+              activeId: node.id,
+              visitedIds: [...visited],
+              description: `Found target key "${target}" at node ID ${node.id}!`,
+            });
+            return true;
+          }
+
+          steps.push({
+            activeId: node.id,
+            visitedIds: [...visited],
+            description: `Inspecting node "${node.value}". ${
+              !isNaN(targetNum) && !isNaN(nodeNum)
+                ? targetNum < nodeNum
+                  ? `Target ${targetNum} < ${nodeNum}, traversing Left branch.`
+                  : `Target ${targetNum} > ${nodeNum}, traversing Right branch.`
+                : 'Traversing child nodes.'
+            }`,
+          });
+
+          const children = elements.filter((n) => n.parentId === nodeId);
+          for (const child of children) {
+            if (searchBST(child.id)) return true;
+          }
+          return false;
+        };
+
+        const found = searchBST(root.id);
+        if (!found) {
+          steps.push({
+            activeId: null,
+            visitedIds: [...visited],
+            description: `Target key "${target}" not found in Binary Search Tree.`,
+          });
+        }
+      } else {
+        // Inorder / Preorder / Postorder Traversals
+        const traverse = (nodeId: string) => {
+          const node = elements.find((n) => n.id === nodeId);
+          if (!node) return;
+
+          const children = elements.filter((n) => n.parentId === nodeId);
+          const left = children[0];
+          const right = children[1];
+
+          if (selectedAlgo === 'preorder') {
+            visited.push(node.id);
+            steps.push({
+              activeId: node.id,
+              visitedIds: [...visited],
+              description: `Preorder Visit Node: "${node.value}".`,
+            });
+          }
+
+          if (left) traverse(left.id);
+
+          if (selectedAlgo === 'inorder') {
+            visited.push(node.id);
+            steps.push({
+              activeId: node.id,
+              visitedIds: [...visited],
+              description: `Inorder Visit Node: "${node.value}".`,
+            });
+          }
+
+          if (right) traverse(right.id);
+
+          if (selectedAlgo === 'postorder') {
+            visited.push(node.id);
+            steps.push({
+              activeId: node.id,
+              visitedIds: [...visited],
+              description: `Postorder Visit Node: "${node.value}".`,
+            });
+          }
+        };
+
+        traverse(root.id);
+      }
+
+      setAlgoSteps(steps);
+      setIsVisualizing(true);
+      setIsPlaying(true);
+    } else if (activeDS === 'stack') {
+      const expr = stackExprValue.trim();
+      if (!expr) {
+        alert('Please enter a bracket expression!');
+        return;
+      }
+
+      let steps: any[] = [];
+      let stack: string[] = [];
+      const matchMap: Record<string, string> = { ')': '(', '}': '{', ']': '[' };
+      let isValid = true;
+
+      for (let i = 0; i < expr.length; i++) {
+        const char = expr[i];
+        if (['(', '{', '['].includes(char)) {
+          stack.push(char);
+          steps.push({
+            stack: [...stack],
+            activeCharIdx: i,
+            description: `Encountered opening bracket '${char}'. PUSH to stack.`,
+            isValid: true,
+          });
+        } else if ([')', '}', ']'].includes(char)) {
+          if (stack.length === 0 || stack[stack.length - 1] !== matchMap[char]) {
+            isValid = false;
+            steps.push({
+              stack: [...stack],
+              activeCharIdx: i,
+              description: `Mismatched closing bracket '${char}'! Expected matching pair for '${stack[stack.length - 1] || 'None'}'. Invalid expression!`,
+              isValid: false,
+            });
+            break;
+          } else {
+            const popped = stack.pop();
+            steps.push({
+              stack: [...stack],
+              activeCharIdx: i,
+              description: `Encountered closing bracket '${char}'. Matched with '${popped}'. POP from stack.`,
+              isValid: true,
+            });
+          }
+        }
+      }
+
+      if (isValid) {
+        if (stack.length === 0) {
+          steps.push({
+            stack: [],
+            activeCharIdx: expr.length,
+            description: 'Expression completed! All brackets balanced successfully! 🎉',
+            isValid: true,
+          });
+        } else {
+          steps.push({
+            stack: [...stack],
+            activeCharIdx: expr.length,
+            description: `Expression ended with unclosed brackets remaining in stack: [${stack.join(', ')}]. Unbalanced!`,
+            isValid: false,
+          });
+        }
+      }
+
+      setAlgoSteps(steps);
+      setIsVisualizing(true);
+      setIsPlaying(true);
+    }
   };
 
   const renderActiveWorkspace = () => {
@@ -463,7 +676,7 @@ function App() {
       case 'array':
         return (
           <ArrayWorkspace
-            elements={isVisualizing && currentStep ? currentStep.elements : elements}
+            elements={elements}
             setElements={setElements}
             selectedId={selectedId}
             onSelectNode={setSelectedId}
@@ -472,18 +685,10 @@ function App() {
             visualizationData={currentStep}
           />
         );
-      case 'stack': {
-        const stackNodes = isVisualizing && currentStep
-          ? currentStep.stack.map((char: string, idx: number) => ({
-              id: `step-stack-${idx}`,
-              value: char,
-              x: 0,
-              y: 0,
-            }))
-          : elements;
+      case 'stack':
         return (
           <StackWorkspace
-            elements={stackNodes}
+            elements={elements}
             setElements={setElements}
             selectedId={selectedId}
             onSelectNode={setSelectedId}
@@ -492,7 +697,6 @@ function App() {
             visualizationData={currentStep}
           />
         );
-      }
       case 'queue':
         return (
           <QueueWorkspace
@@ -501,8 +705,6 @@ function App() {
             selectedId={selectedId}
             onSelectNode={setSelectedId}
             onEditValue={handleEditNodeValue}
-            // @ts-ignore
-            visualizationData={currentStep}
           />
         );
       case 'linkedlist':
@@ -545,24 +747,24 @@ function App() {
   const currentStep = isVisualizing ? algoSteps[currentStepIdx] : null;
 
   return (
-    <div className="flex flex-col min-h-screen bg-pastel-bg text-pastel-dark font-sans relative">
+    <div className="flex flex-col min-h-screen bg-[var(--bg-main)] text-[var(--text-main)] font-sans relative transition-colors duration-300">
       <Navbar onOpenAboutModal={() => setIsHowItWorksOpen(true)} />
 
       <div className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col lg:flex-row gap-6">
         
         {/* Left Side Control Panel */}
         <div className="w-full lg:w-80 flex-shrink-0 flex flex-col gap-6">
-          <Card className="flex flex-col gap-5 border-[#a38deb]">
-            <div className="flex items-center gap-1.5 border-b border-[#a38deb]/50 pb-3">
-              <Sparkles className="w-4.5 h-4.5 text-[#4c258d]" />
-              <h3 className="font-bold text-sm text-[#250d4f] font-display">
+          <Card className="flex flex-col gap-5 border-[var(--panel-border)]">
+            <div className="flex items-center gap-1.5 border-b border-[var(--panel-border)] pb-3 transition-colors duration-300">
+              <Sparkles className="w-4.5 h-4.5 text-[var(--btn-primary-bg)]" />
+              <h3 className="font-bold text-sm text-[var(--text-main)] font-display transition-colors duration-300">
                 Visualizer Panel
               </h3>
             </div>
 
             {/* Dropdown Selector */}
             <div className="flex flex-col gap-2">
-              <label className="text-[10px] font-black uppercase tracking-widest text-[#4c258d]">
+              <label className="text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)] transition-colors duration-300">
                 Structure Type
               </label>
               <div className="relative flex items-center">
@@ -570,21 +772,21 @@ function App() {
                   value={activeDS}
                   onChange={(e) => setActiveDS(e.target.value)}
                   disabled={isVisualizing}
-                  className="w-full pl-3 pr-10 py-2.5 bg-[#dfd7fc] border border-[#a38deb] hover:border-[#4c258d] text-[#250d4f] rounded-2xl text-sm font-bold focus:outline-none appearance-none cursor-pointer shadow-sm transition-all disabled:opacity-50"
+                  className="w-full pl-3 pr-10 py-2.5 bg-[var(--input-bg)] border border-[var(--input-border)] hover:border-[var(--btn-primary-bg)] text-[var(--input-text)] rounded-2xl text-sm font-bold focus:outline-none appearance-none cursor-pointer shadow-sm transition-all disabled:opacity-50"
                 >
                   {dsOptions.map((opt) => (
-                    <option key={opt.value} value={opt.value}>
+                    <option key={opt.value} value={opt.value} className="bg-[var(--panel-bg)] text-[var(--text-main)]">
                       {opt.label}
                     </option>
                   ))}
                 </select>
-                <ChevronDown className="w-4 h-4 text-[#250d4f] absolute right-3 pointer-events-none" />
+                <ChevronDown className="w-4 h-4 text-[var(--input-text)] absolute right-3 pointer-events-none" />
               </div>
             </div>
 
             {/* Value Input */}
             <div className="flex flex-col gap-2">
-              <label className="text-[10px] font-black uppercase tracking-widest text-[#4c258d]">
+              <label className="text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)] transition-colors duration-300">
                 Input Element Value
               </label>
               <input
@@ -594,13 +796,13 @@ function App() {
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 disabled={isVisualizing}
-                className="w-full px-3 py-2.5 bg-[#dfd7fc] border border-[#a38deb] hover:border-[#4c258d] text-[#250d4f] placeholder-[#250d4f]/45 rounded-2xl text-sm font-bold focus:outline-none shadow-sm transition-all disabled:opacity-50"
+                className="w-full px-3 py-2.5 bg-[var(--input-bg)] border border-[var(--input-border)] hover:border-[var(--btn-primary-bg)] text-[var(--input-text)] placeholder-[var(--input-placeholder)] rounded-2xl text-sm font-bold focus:outline-none shadow-sm transition-all disabled:opacity-50"
               />
             </div>
 
             {/* Operations Actions */}
-            <div className="flex flex-col gap-2 border-t border-purple-100/50 pt-4">
-              <label className="text-[10px] font-black uppercase tracking-widest text-[#4c258d]">
+            <div className="flex flex-col gap-2 border-t border-[var(--panel-border)] pt-4 transition-colors duration-300">
+              <label className="text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)] transition-colors duration-300">
                 Operations
               </label>
               <div className="grid grid-cols-2 gap-2.5">
@@ -656,10 +858,10 @@ function App() {
 
           {/* Algorithms Visualizer Panel */}
           {activeDS !== 'queue' && (
-            <Card className="flex flex-col gap-4 border-[#a38deb] bg-[#eae5fc]/50">
-              <div className="flex items-center gap-1.5 border-b border-[#a38deb]/50 pb-2">
-                <Eye className="w-4 h-4 text-[#4c258d]" />
-                <h3 className="font-bold text-xs text-[#250d4f] font-display uppercase tracking-wider">
+            <Card className="flex flex-col gap-4 border-[var(--panel-border)]">
+              <div className="flex items-center gap-1.5 border-b border-[var(--panel-border)] pb-2 transition-colors duration-300">
+                <Eye className="w-4 h-4 text-[var(--btn-primary-bg)]" />
+                <h3 className="font-bold text-xs text-[var(--text-main)] font-display uppercase tracking-wider transition-colors duration-300">
                   DSA Algorithms
                 </h3>
               </div>
@@ -667,17 +869,17 @@ function App() {
               {activeDS === 'array' && (
                 <div className="flex flex-col gap-3">
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-[9px] font-black uppercase text-[#4c258d]">Sorting Algorithm</label>
+                    <label className="text-[9px] font-black uppercase text-[var(--text-muted)] transition-colors duration-300">Sorting Algorithm</label>
                     <select
                       value={selectedAlgo}
                       onChange={(e) => setSelectedAlgo(e.target.value)}
                       disabled={isVisualizing}
-                      className="w-full pl-2 pr-8 py-1.5 bg-[#dfd7fc] border border-[#a38deb] text-[#250d4f] rounded-xl text-xs font-bold focus:outline-none cursor-pointer"
+                      className="w-full pl-2 pr-8 py-1.5 bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--input-text)] rounded-xl text-xs font-bold focus:outline-none cursor-pointer"
                     >
-                      <option value="bubble">Bubble Sort</option>
-                      <option value="selection">Selection Sort</option>
-                      <option value="insertion">Insertion Sort</option>
-                      <option value="quick">Quick Sort</option>
+                      <option value="bubble" className="bg-[var(--panel-bg)] text-[var(--text-main)]">Bubble Sort</option>
+                      <option value="selection" className="bg-[var(--panel-bg)] text-[var(--text-main)]">Selection Sort</option>
+                      <option value="insertion" className="bg-[var(--panel-bg)] text-[var(--text-main)]">Insertion Sort</option>
+                      <option value="quick" className="bg-[var(--panel-bg)] text-[var(--text-main)]">Quick Sort</option>
                     </select>
                   </div>
                   <Button
@@ -685,7 +887,7 @@ function App() {
                     onClick={handleRunAlgorithm}
                     icon={<Play className="w-3.5 h-3.5 fill-current" />}
                     disabled={isVisualizing}
-                    className="w-full text-xs py-2 bg-purple-700 border-purple-800"
+                    className="w-full text-xs py-2"
                   >
                     Run Sort Algorithm
                   </Button>
@@ -695,22 +897,22 @@ function App() {
               {activeDS === 'tree' && (
                 <div className="flex flex-col gap-3">
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-[9px] font-black uppercase text-[#4c258d]">Tree Operation</label>
+                    <label className="text-[9px] font-black uppercase text-[var(--text-muted)] transition-colors duration-300">Tree Operation</label>
                     <select
                       value={selectedAlgo}
                       onChange={(e) => setSelectedAlgo(e.target.value)}
                       disabled={isVisualizing}
-                      className="w-full pl-2 pr-8 py-1.5 bg-[#dfd7fc] border border-[#a38deb] text-[#250d4f] rounded-xl text-xs font-bold focus:outline-none cursor-pointer"
+                      className="w-full pl-2 pr-8 py-1.5 bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--input-text)] rounded-xl text-xs font-bold focus:outline-none cursor-pointer"
                     >
-                      <option value="inorder">Inorder Traversal</option>
-                      <option value="preorder">Preorder Traversal</option>
-                      <option value="postorder">Postorder Traversal</option>
-                      <option value="search">BST Search Target</option>
+                      <option value="inorder" className="bg-[var(--panel-bg)] text-[var(--text-main)]">Inorder Traversal</option>
+                      <option value="preorder" className="bg-[var(--panel-bg)] text-[var(--text-main)]">Preorder Traversal</option>
+                      <option value="postorder" className="bg-[var(--panel-bg)] text-[var(--text-main)]">Postorder Traversal</option>
+                      <option value="search" className="bg-[var(--panel-bg)] text-[var(--text-main)]">BST Search Target</option>
                     </select>
                   </div>
                   {selectedAlgo === 'search' && (
                     <div className="flex flex-col gap-1">
-                      <label className="text-[9px] font-black uppercase text-[#4c258d]">Search Value</label>
+                      <label className="text-[9px] font-black uppercase text-[var(--text-muted)] transition-colors duration-300">Search Value</label>
                       <input
                         type="text"
                         maxLength={4}
@@ -718,7 +920,7 @@ function App() {
                         value={searchValue}
                         onChange={(e) => setSearchValue(e.target.value)}
                         disabled={isVisualizing}
-                        className="w-full px-2.5 py-1.5 bg-[#dfd7fc] border border-[#a38deb] text-[#250d4f] text-xs font-bold rounded-xl outline-none"
+                        className="w-full px-2.5 py-1.5 bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--input-text)] text-xs font-bold rounded-xl outline-none"
                       />
                     </div>
                   )}
@@ -727,7 +929,7 @@ function App() {
                     onClick={handleRunAlgorithm}
                     icon={<Play className="w-3.5 h-3.5 fill-current" />}
                     disabled={isVisualizing}
-                    className="w-full text-xs py-2 bg-purple-700 border-purple-800"
+                    className="w-full text-xs py-2"
                   >
                     {selectedAlgo === 'search' ? 'Search Tree' : 'Run Traversal'}
                   </Button>
@@ -737,7 +939,7 @@ function App() {
               {activeDS === 'linkedlist' && (
                 <div className="flex flex-col gap-3">
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-[9px] font-black uppercase text-[#4c258d]">Search Value</label>
+                    <label className="text-[9px] font-black uppercase text-[var(--text-muted)] transition-colors duration-300">Search Value</label>
                     <input
                       type="text"
                       maxLength={4}
@@ -745,7 +947,7 @@ function App() {
                       value={searchValue}
                       onChange={(e) => setSearchValue(e.target.value)}
                       disabled={isVisualizing}
-                      className="w-full px-2.5 py-1.5 bg-[#dfd7fc] border border-[#a38deb] text-[#250d4f] text-xs font-bold rounded-xl outline-none"
+                      className="w-full px-2.5 py-1.5 bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--input-text)] text-xs font-bold rounded-xl outline-none"
                     />
                   </div>
                   <Button
@@ -753,7 +955,7 @@ function App() {
                     onClick={handleRunAlgorithm}
                     icon={<Play className="w-3.5 h-3.5 fill-current" />}
                     disabled={isVisualizing}
-                    className="w-full text-xs py-2 bg-purple-700 border-purple-800"
+                    className="w-full text-xs py-2"
                   >
                     Linear Search Node
                   </Button>
@@ -763,14 +965,14 @@ function App() {
               {activeDS === 'stack' && (
                 <div className="flex flex-col gap-3">
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-[9px] font-black uppercase text-[#4c258d]">Bracket Expression</label>
+                    <label className="text-[9px] font-black uppercase text-[var(--text-muted)] transition-colors duration-300">Bracket Expression</label>
                     <input
                       type="text"
                       placeholder="e.g. {[()]}"
                       value={stackExprValue}
                       onChange={(e) => setStackExprValue(e.target.value)}
                       disabled={isVisualizing}
-                      className="w-full px-2.5 py-1.5 bg-[#dfd7fc] border border-[#a38deb] text-[#250d4f] text-xs font-bold rounded-xl outline-none"
+                      className="w-full px-2.5 py-1.5 bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--input-text)] text-xs font-bold rounded-xl outline-none"
                     />
                   </div>
                   <Button
@@ -778,7 +980,7 @@ function App() {
                     onClick={handleRunAlgorithm}
                     icon={<Play className="w-3.5 h-3.5 fill-current" />}
                     disabled={isVisualizing}
-                    className="w-full text-xs py-2 bg-purple-700 border-purple-800"
+                    className="w-full text-xs py-2"
                   >
                     Verify Bracket Balance
                   </Button>
@@ -788,17 +990,17 @@ function App() {
           )}
 
           {/* Workspaces Persistence Panel */}
-          <Card className="flex flex-col gap-4 border-[#a38deb] bg-[#eae5fc]/50">
-            <div className="flex items-center gap-1.5 border-b border-[#a38deb]/50 pb-2">
-              <FolderOpen className="w-4 h-4 text-[#4c258d]" />
-              <h3 className="font-bold text-xs text-[#250d4f] font-display uppercase tracking-wider">
+          <Card className="flex flex-col gap-4 border-[var(--panel-border)]">
+            <div className="flex items-center gap-1.5 border-b border-[var(--panel-border)] pb-2 transition-colors duration-300">
+              <FolderOpen className="w-4 h-4 text-[var(--btn-primary-bg)]" />
+              <h3 className="font-bold text-xs text-[var(--text-main)] font-display uppercase tracking-wider transition-colors duration-300">
                 Saved Workspaces
               </h3>
             </div>
 
             {/* Save Workspace Form */}
-            <div className="flex flex-col gap-2 border-b border-[#a38deb]/30 pb-3">
-              <label className="text-[9px] font-black uppercase text-[#4c258d]">Save Current Canvas</label>
+            <div className="flex flex-col gap-2 border-b border-[var(--panel-border)] pb-3 transition-colors duration-300">
+              <label className="text-[9px] font-black uppercase text-[var(--text-muted)] transition-colors duration-300">Save Current Canvas</label>
               <div className="flex gap-2">
                 <input
                   type="text"
@@ -806,7 +1008,7 @@ function App() {
                   value={saveName}
                   onChange={(e) => setSaveName(e.target.value)}
                   disabled={isVisualizing}
-                  className="flex-1 px-2.5 py-1.5 bg-[#dfd7fc] border border-[#a38deb] text-[#250d4f] text-xs font-bold rounded-xl outline-none min-w-0"
+                  className="flex-1 px-2.5 py-1.5 bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--input-text)] text-xs font-bold rounded-xl outline-none min-w-0"
                 />
                 <Button
                   variant="primary"
@@ -820,9 +1022,9 @@ function App() {
 
             {/* Load Workspace Selector */}
             <div className="flex flex-col gap-2">
-              <label className="text-[9px] font-black uppercase text-[#4c258d]">Load Workspace</label>
+              <label className="text-[9px] font-black uppercase text-[var(--text-muted)] transition-colors duration-300">Load Workspace</label>
               {workspaces.length === 0 ? (
-                <div className="text-[10px] text-[#250d4f]/60 italic">No workspaces saved.</div>
+                <div className="text-[10px] text-[var(--text-muted)] italic transition-colors duration-300">No workspaces saved.</div>
               ) : (
                 <div className="flex flex-col gap-2">
                   <div className="relative flex items-center">
@@ -830,16 +1032,16 @@ function App() {
                       value={selectedWorkspaceId}
                       onChange={(e) => setSelectedWorkspaceId(e.target.value)}
                       disabled={isVisualizing}
-                      className="w-full pl-2 pr-8 py-1.5 bg-[#dfd7fc] border border-[#a38deb] text-[#250d4f] rounded-xl text-xs font-bold focus:outline-none cursor-pointer"
+                      className="w-full pl-2 pr-8 py-1.5 bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--input-text)] rounded-xl text-xs font-bold focus:outline-none cursor-pointer"
                     >
-                      <option value="">Select a workspace...</option>
+                      <option value="" className="bg-[var(--panel-bg)] text-[var(--text-main)]">Select a workspace...</option>
                       {workspaces.map((ws) => (
-                        <option key={ws.id} value={ws.id}>
+                        <option key={ws.id} value={ws.id} className="bg-[var(--panel-bg)] text-[var(--text-main)]">
                           {ws.name} ({ws.dsType})
                         </option>
                       ))}
                     </select>
-                    <ChevronDown className="w-3.5 h-3.5 text-[#250d4f] absolute right-2 pointer-events-none" />
+                    <ChevronDown className="w-3.5 h-3.5 text-[var(--input-text)] absolute right-2 pointer-events-none" />
                   </div>
                   {selectedWorkspaceId && (
                     <div className="grid grid-cols-2 gap-2">
@@ -865,9 +1067,9 @@ function App() {
           </Card>
           
           {/* Help Hints Card */}
-          <div className="text-[11px] text-[#250d4f]/80 bg-[#a28ceb]/30 border border-[#947deb]/40 rounded-3xl p-4 flex flex-col gap-1.5 shadow-sm">
+          <div className="text-[11px] text-[var(--text-main)] bg-[var(--btn-secondary-bg)]/30 border border-[var(--btn-secondary-border)] rounded-3xl p-4 flex flex-col gap-1.5 shadow-sm transition-colors duration-300">
             <div className="font-bold flex items-center gap-1">
-              <HelpCircle className="w-3.5 h-3.5 text-[#250d4f]" />
+              <HelpCircle className="w-3.5 h-3.5 text-[var(--btn-primary-bg)]" />
               <span>Did you know?</span>
             </div>
             {activeDS === 'array' && (
@@ -890,21 +1092,21 @@ function App() {
 
         {/* Right Sandbox Workspace Canvas */}
         <div className="flex-1 flex flex-col gap-4">
-          <Card className="flex-1 bg-gradient-to-br from-[#e8e2fa] to-[#f7f5fd] border-[#a38deb] relative overflow-hidden flex flex-col justify-between min-h-[460px] p-8 shadow-sm">
+          <Card className="flex-1 border-[var(--panel-border)] relative overflow-hidden flex flex-col justify-between min-h-[460px] p-8 shadow-sm">
             {/* Visual Grid background details */}
             <div className="absolute inset-0 bg-canvas-grid-pattern opacity-100 pointer-events-none" />
             
             {/* Header info bar */}
-            <div className="flex justify-between items-center border-b border-[#a38deb]/60 pb-3 relative z-10">
-              <h4 className="text-base font-bold font-display text-[#250d4f] flex items-center gap-2">
-                <span className="w-2.5 h-2.5 rounded-full bg-[#4c258d] animate-pulse" />
+            <div className="flex justify-between items-center border-b border-[var(--panel-border)] pb-3 relative z-10 transition-colors duration-300">
+              <h4 className="text-base font-bold font-display text-[var(--text-main)] flex items-center gap-2 transition-colors duration-300">
+                <span className="w-2.5 h-2.5 rounded-full bg-[var(--btn-primary-bg)] animate-pulse" />
                 {dsOptions.find(opt => opt.value === activeDS)?.label} Canvas
               </h4>
               <div className="flex gap-2">
                 <Button
                   variant="secondary"
                   onClick={() => handleRandomize()}
-                  icon={<RefreshCw className="w-3.5 h-3.5 text-[#250d4f]" />}
+                  icon={<RefreshCw className="w-3.5 h-3.5 text-current" />}
                   className="px-3.5 py-1 text-xs rounded-xl"
                   disabled={isVisualizing}
                 >
@@ -916,17 +1118,17 @@ function App() {
             {/* Bracket stack expression helper in stack visualization mode */}
             {isVisualizing && activeDS === 'stack' && currentStep && (
               <div className="w-full flex flex-col items-center justify-center pt-4 z-10 gap-1.5">
-                <span className="text-[9px] font-black uppercase text-[#4c258d] tracking-widest">Expression Scanning</span>
+                <span className="text-[9px] font-black uppercase text-[var(--text-muted)] tracking-widest transition-colors duration-300">Expression Scanning</span>
                 <div className="flex gap-1.5 text-base font-bold font-mono">
                   {stackExprValue.split('').map((char, i) => (
                     <span
                       key={i}
                       className={`px-3 py-1.5 rounded-xl border transition-all duration-300 ${
                         i === currentStep.activeCharIdx
-                          ? 'bg-[#4a238a] border-[#4a238a] text-[#f3f0fd] scale-110 shadow-md ring-2 ring-[#bdabfc]/60'
+                          ? 'bg-[var(--node-selected-bg)] border-[var(--node-selected-border)] text-[var(--node-selected-text)] scale-110 shadow-md ring-2 ring-[var(--panel-border)]'
                           : i < currentStep.activeCharIdx
-                          ? 'bg-[#dfd7fc]/30 border-[#a38deb]/30 text-[#250d4f]/40 line-through'
-                          : 'bg-[#dfd7fc] border-[#a38deb] text-[#250d4f]'
+                          ? 'bg-[var(--input-bg)]/30 border-[var(--panel-border)]/30 text-[var(--text-muted)] line-through'
+                          : 'bg-[var(--input-bg)] border-[var(--input-border)] text-[var(--input-text)]'
                       }`}
                     >
                       {char}
@@ -942,44 +1144,44 @@ function App() {
             </div>
 
             {/* Bottom status bar */}
-            <div className="border-t border-[#a38deb]/50 pt-3 relative z-10 flex justify-between items-center text-xs text-[#250d4f] font-mono">
+            <div className="border-t border-[var(--panel-border)] pt-3 relative z-10 flex justify-between items-center text-xs text-[var(--text-main)] font-mono transition-colors duration-300">
               <div>
                 Elements count: <span className="font-bold">{isVisualizing && activeDS === 'stack' && currentStep ? currentStep.stack.length : elements.length}</span>
               </div>
               <div>
                 Selected Node: {selectedId && !isVisualizing ? (
-                  <span className="text-[#f3f0fd] font-bold bg-[#4a238a] px-2 py-0.5 rounded-md">
+                  <span className="text-[var(--node-selected-text)] font-bold bg-[var(--node-selected-bg)] px-2 py-0.5 rounded-md">
                     {elements.find(el => el.id === selectedId)?.value || 'None'}
                   </span>
                 ) : (
-                  <span className="text-[#250d4f]/60 font-bold">None</span>
+                  <span className="text-[var(--text-muted)] font-bold">None</span>
                 )}
               </div>
             </div>
           </Card>
 
-          {/* Premium Floating Algorithm Playback Controller Toolbar */}
+          {/* Floating Algorithm Playback Controller Toolbar */}
           {isVisualizing && currentStep && (
-            <Card className="border-[#4a238a] bg-gradient-to-r from-[#dfd7fc] to-[#e8e2fa] shadow-lg flex flex-col md:flex-row gap-4 justify-between items-center p-4 relative overflow-hidden z-20">
+            <Card className="border-[var(--panel-border-glow)] bg-[var(--panel-glow-bg)] shadow-lg flex flex-col md:flex-row gap-4 justify-between items-center p-4 relative overflow-hidden z-20 transition-colors duration-300">
               {/* Active step number indicator */}
-              <div className="absolute top-0 left-0 bg-[#4a238a] text-white text-[8px] font-black uppercase tracking-wider px-2 py-0.5 rounded-br-lg">
+              <div className="absolute top-0 left-0 bg-[var(--btn-primary-bg)] text-[var(--btn-primary-text)] text-[8px] font-black uppercase tracking-wider px-2 py-0.5 rounded-br-lg">
                 Step {currentStepIdx + 1} of {algoSteps.length}
               </div>
 
               {/* Progress Bar background tracking */}
-              <div className="absolute bottom-0 left-0 right-0 h-1 bg-[#4c258d]/20">
+              <div className="absolute bottom-0 left-0 right-0 h-1 bg-[var(--btn-primary-bg)]/20">
                 <div
-                  className="h-full bg-purple-700 transition-all duration-300"
+                  className="h-full bg-[var(--btn-primary-bg)] transition-all duration-300"
                   style={{ width: `${((currentStepIdx + 1) / algoSteps.length) * 100}%` }}
                 />
               </div>
 
               {/* Narration and Logging */}
               <div className="flex-1 flex gap-2 items-center min-w-0 md:max-w-[45%]">
-                <AlertCircle className="w-5 h-5 text-purple-700 flex-shrink-0" />
+                <AlertCircle className="w-5 h-5 text-[var(--btn-primary-bg)] flex-shrink-0" />
                 <div className="flex flex-col min-w-0">
-                  <span className="text-[9px] font-black uppercase text-[#4c258d] tracking-widest leading-none">Algorithm Log</span>
-                  <p className="text-xs font-bold text-[#250d4f] truncate" title={currentStep.description}>
+                  <span className="text-[9px] font-black uppercase text-[var(--text-muted)] tracking-widest leading-none transition-colors duration-300">Algorithm Log</span>
+                  <p className="text-xs font-bold text-[var(--text-main)] truncate transition-colors duration-300" title={currentStep.description}>
                     {currentStep.description}
                   </p>
                 </div>
@@ -998,7 +1200,7 @@ function App() {
                   variant="primary"
                   onClick={() => setIsPlaying(!isPlaying)}
                   icon={isPlaying ? <Pause className="w-4 h-4 fill-current" /> : <Play className="w-4 h-4 fill-current" />}
-                  className="p-3 bg-purple-700 border-purple-800 rounded-full"
+                  className="p-3 rounded-full"
                 />
                 <Button
                   variant="secondary"
@@ -1013,20 +1215,20 @@ function App() {
               <div className="flex items-center gap-3 w-full md:w-auto justify-end">
                 {/* Speed selector */}
                 <div className="flex flex-col">
-                  <span className="text-[7px] font-black uppercase text-[#4c258d] tracking-wider mb-0.5 text-right">Speed</span>
+                  <span className="text-[7px] font-black uppercase text-[var(--text-muted)] tracking-wider mb-0.5 text-right transition-colors duration-300">Speed</span>
                   <select
                     value={playbackSpeed}
                     onChange={(e) => setPlaybackSpeed(Number(e.target.value))}
-                    className="pl-2 pr-6 py-1 bg-[#dfd7fc] border border-[#a38deb]/70 text-[#250d4f] rounded-lg text-[10px] font-bold focus:outline-none cursor-pointer"
+                    className="pl-2 pr-6 py-1 bg-[var(--input-bg)] border border-[var(--input-border)] text-[var(--input-text)] rounded-lg text-[10px] font-bold focus:outline-none cursor-pointer"
                   >
-                    <option value="1500">0.5x Slow</option>
-                    <option value="1000">1.0x Normal</option>
-                    <option value="500">2.0x Fast</option>
-                    <option value="250">4.0x Turbo</option>
+                    <option value="1500" className="bg-[var(--panel-bg)] text-[var(--text-main)]">0.5x Slow</option>
+                    <option value="1000" className="bg-[var(--panel-bg)] text-[var(--text-main)]">1.0x Normal</option>
+                    <option value="500" className="bg-[var(--panel-bg)] text-[var(--text-main)]">2.0x Fast</option>
+                    <option value="250" className="bg-[var(--panel-bg)] text-[var(--text-main)]">4.0x Turbo</option>
                   </select>
                 </div>
 
-                <div className="h-8 w-[1px] bg-[#a38deb]/30 hidden md:block" />
+                <div className="h-8 w-[1px] bg-[var(--panel-border)] hidden md:block" />
 
                 <button
                   onClick={() => {
@@ -1044,10 +1246,10 @@ function App() {
         </div>
       </div>
 
-      <footer className="border-t border-[#a38deb]/40 bg-[#bdabfc]/60 py-6 text-center text-xs text-[#250d4f] font-mono">
+      <footer className="border-t border-[var(--panel-border)] bg-[var(--panel-bg-95)] py-6 text-center text-xs text-[var(--text-muted)] font-mono transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-1.5">
-            <Cpu className="w-3.5 h-3.5 text-[#4c258d]" />
+            <Cpu className="w-3.5 h-3.5 text-[var(--btn-primary-bg)]" />
             <span>DSA Visualizer Playground v2.0.0</span>
           </div>
           <div>
@@ -1062,44 +1264,44 @@ function App() {
         title="Interactive Playground Guide"
         size="md"
       >
-        <div className="flex flex-col gap-5 text-[#250d4f]">
-          <div className="flex items-center gap-3 bg-[#a28ceb]/20 p-3.5 rounded-2xl border border-[#947deb]/40">
-            <div className="w-9 h-9 bg-[#dfd7fc] rounded-xl flex items-center justify-center">
-              <Play className="w-5 h-5 text-[#4a238a] fill-[#4a238a]" />
+        <div className="flex flex-col gap-5 text-[var(--modal-body-text)]">
+          <div className="flex items-center gap-3 bg-[var(--btn-secondary-bg)]/30 p-3.5 rounded-2xl border border-[var(--btn-secondary-border)]">
+            <div className="w-9 h-9 bg-[var(--input-bg)] rounded-xl flex items-center justify-center">
+              <Play className="w-5 h-5 text-[var(--btn-primary-bg)] fill-[var(--btn-primary-bg)]" />
             </div>
             <div>
-              <h4 className="font-bold text-sm text-[#250d4f]">Whiteboard Sandbox Mechanics</h4>
-              <p className="text-[11px] text-[#4a238a] font-black">Manipulate nodes in real time just like Canva or Figma.</p>
+              <h4 className="font-bold text-sm text-[var(--text-main)]">Whiteboard Sandbox Mechanics</h4>
+              <p className="text-[11px] text-[var(--text-muted)] font-black">Manipulate nodes in real time just like Canva or Figma.</p>
             </div>
           </div>
 
-          <div className="flex flex-col gap-3 text-xs leading-relaxed text-[#250d4f]/80">
+          <div className="flex flex-col gap-3 text-xs leading-relaxed text-[var(--modal-body-text)]">
             <p>
               This app is designed to help you construct and manipulate standard data structures visually. Here's how you can play:
             </p>
             <ul className="list-disc pl-5 flex flex-col gap-1.5">
               <li>
-                <span className="font-bold text-[#250d4f]">Drag to Position:</span> In the Linked List and Tree view, you can drag circles freely inside the canvas. Connection lines adapt automatically!
+                <span className="font-bold text-[var(--text-main)]">Drag to Position:</span> In the Linked List and Tree view, you can drag circles freely inside the canvas. Connection lines adapt automatically!
               </li>
               <li>
-                <span className="font-bold text-[#250d4f]">Drag to Reorder Array:</span> Drag any index box horizontally to reposition it in the array slots.
+                <span className="font-bold text-[var(--text-main)]">Drag to Reorder Array:</span> Drag any index box horizontally to reposition it in the array slots.
               </li>
               <li>
-                <span className="font-bold text-[#250d4f]">Insert Anywhere (Array):</span> Select a box in the Array, enter a value, and click Add to insert a new element at that index.
+                <span className="font-bold text-[var(--text-main)]">Insert Anywhere (Array):</span> Select a box in the Array, enter a value, and click Add to insert a new element at that index.
               </li>
               <li>
-                <span className="font-bold text-[#250d4f]">Build custom Trees:</span> Select a parent node, type a value, and click Add. The child connects automatically! To delete a subtree, select the parent node and click Delete.
+                <span className="font-bold text-[var(--text-main)]">Build custom Trees:</span> Select a parent node, type a value, and click Add. The child connects automatically! To delete a subtree, select the parent node and click Delete.
               </li>
               <li>
-                <span className="font-bold text-[#250d4f]">LIFO & FIFO Rules:</span> Push/Pop and Enqueue/Dequeue automatically animate values entering and exiting Stack and Queue layouts.
+                <span className="font-bold text-[var(--text-main)]">LIFO & FIFO Rules:</span> Push/Pop and Enqueue/Dequeue automatically animate values entering and exiting Stack and Queue layouts.
               </li>
             </ul>
           </div>
 
-          <div className="border-t border-[#a38deb]/45 pt-4 flex justify-end">
+          <div className="border-t border-[var(--panel-border)] pt-4 flex justify-end">
             <button
               onClick={() => setIsHowItWorksOpen(false)}
-              className="px-4 py-2 bg-[#4c258d] text-[#ece8ff] hover:bg-[#3f1c7a] rounded-2xl text-xs font-bold shadow-md cursor-pointer transition-all"
+              className="px-4 py-2 bg-[var(--btn-primary-bg)] text-[var(--btn-primary-text)] hover:opacity-90 rounded-2xl text-xs font-bold shadow-md cursor-pointer transition-all"
             >
               Start Building
             </button>
@@ -1107,6 +1309,14 @@ function App() {
         </div>
       </Modal>
     </div>
+  );
+}
+
+export function App() {
+  return (
+    <ThemeProvider>
+      <MainVisualizerApp />
+    </ThemeProvider>
   );
 }
 

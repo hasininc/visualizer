@@ -40,36 +40,36 @@ export const StackWorkspace: React.FC<StackWorkspaceProps> = ({
   };
 
   // Determine container styling based on validation status
-  let containerBorderColor = 'border-[#a38deb]';
-  let containerBgColor = 'bg-[#a28ceb]/10';
+  let containerBorderColor = 'border-[var(--canvas-border)]';
+  let containerBgColor = 'bg-[var(--canvas-bg)]';
   if (isVisualizing) {
     if (!visualizationData.isValid) {
       containerBorderColor = 'border-rose-500 animate-pulse';
-      containerBgColor = 'bg-rose-50';
+      containerBgColor = 'bg-rose-950/20';
     } else if (visualizationData.stack.length === 0 && visualizationData.description.includes('balanced')) {
       containerBorderColor = 'border-emerald-500';
-      containerBgColor = 'bg-emerald-50/50';
+      containerBgColor = 'bg-emerald-950/20';
     }
   }
 
   return (
     <div className="flex flex-col items-center justify-start gap-4 w-full py-2">
       {elements.length === 0 && !isVisualizing ? (
-        <div className="text-[#4c258d]/70 font-display font-medium text-sm select-none p-8 border border-dashed border-[#a38deb]/45 rounded-3xl">
+        <div className="text-[var(--text-muted)] font-display font-medium text-sm select-none p-8 border border-dashed border-[var(--empty-border)] rounded-3xl transition-colors duration-300">
           Stack empty. Push elements in the left panel!
         </div>
       ) : (
         <div className="flex flex-col items-center w-full max-w-xs">
-          <div className="text-center text-[10px] text-[#4c258d]/80 font-black tracking-widest uppercase mb-3">
+          <div className="text-center text-[10px] text-[var(--text-muted)] font-black tracking-widest uppercase mb-3 transition-colors duration-300">
             {isVisualizing
               ? 'Balancing validation in progress... Interactivity paused.'
               : 'Drag vertically to reorder stack • Double-click to edit'}
           </div>
 
           {/* Figma Vertical Auto-Layout Stack Capsule */}
-          <div className={`border-x-4 border-b-4 ${containerBorderColor} rounded-b-3xl p-4 ${containerBgColor} min-w-[150px] relative pt-6 flex flex-col items-center transition-all duration-300 min-h-[160px] justify-end`}>
+          <div className={`border-x-4 border-b-4 ${containerBorderColor} rounded-b-3xl p-4 ${containerBgColor} min-w-[150px] relative pt-6 flex flex-col items-center transition-all duration-300 min-h-[160px] justify-end shadow-inner`}>
             {/* Top Indicator Label */}
-            <div className="absolute -top-6 left-1/2 -translate-x-1/2 text-[10px] text-[#4c258d] font-bold font-mono tracking-widest uppercase select-none">
+            <div className="absolute -top-6 left-1/2 -translate-x-1/2 text-[10px] text-[var(--text-muted)] font-bold font-mono tracking-widest uppercase select-none transition-colors duration-300">
               Top of Stack
             </div>
 
@@ -82,18 +82,18 @@ export const StackWorkspace: React.FC<StackWorkspaceProps> = ({
 
                   let nodeClass = '';
                   if (isTop && isInvalidState) {
-                    nodeClass = 'bg-rose-200 border-rose-500 text-rose-950 ring-4 ring-rose-500 ring-offset-1 animate-bounce';
+                    nodeClass = 'bg-rose-500 border-rose-600 text-white ring-4 ring-rose-500 ring-offset-1 animate-bounce';
                   } else if (isTop) {
                     nodeClass = 'bg-purple-600 border-purple-800 text-white ring-2 ring-purple-400';
                   } else {
-                    nodeClass = 'bg-[#dfd7fc]/60 border-[#a38deb]/40 text-[#250d4f]';
+                    nodeClass = 'bg-[var(--node-bg)] border-[var(--node-border)] text-[var(--node-text)]';
                   }
 
                   return (
                     <motion.div
                       key={el.id}
                       layoutId={el.id}
-                      className="flex items-center justify-between gap-3 px-3 py-1 border rounded-2xl w-full select-none"
+                      className="flex items-center justify-between gap-3 px-3 py-1 border border-[var(--panel-border)] rounded-2xl w-full select-none"
                     >
                       <NodeCard
                         value={el.value}
@@ -101,14 +101,14 @@ export const StackWorkspace: React.FC<StackWorkspaceProps> = ({
                         className={`flex-shrink-0 ${nodeClass}`}
                         onSelect={() => {}}
                       />
-                      <span className="text-[9px] text-[#4c258d] font-mono font-bold uppercase select-none">
+                      <span className="text-[9px] text-[var(--text-muted)] font-mono font-bold uppercase select-none transition-colors duration-300">
                         {isTop ? 'TOP' : `[${elements.length - 1 - idx}]`}
                       </span>
                     </motion.div>
                   );
                 })}
                 {stackElements.length === 0 && (
-                  <div className="text-[10px] text-[#4c258d]/50 italic select-none py-4">
+                  <div className="text-[10px] text-[var(--text-muted)] italic select-none py-4 transition-colors duration-300">
                     Stack is empty
                   </div>
                 )}
@@ -129,7 +129,7 @@ export const StackWorkspace: React.FC<StackWorkspaceProps> = ({
                     <Reorder.Item
                       key={el.id}
                       value={el}
-                      className="cursor-grab active:cursor-grabbing flex items-center justify-between gap-3 px-3 py-1 bg-[#dfd7fc]/40 hover:bg-[#dfd7fc]/60 border border-[#a38deb]/30 rounded-2xl w-full select-none"
+                      className="cursor-grab active:cursor-grabbing flex items-center justify-between gap-3 px-3 py-1 bg-[var(--input-bg)]/40 hover:bg-[var(--input-bg)]/70 border border-[var(--panel-border)] rounded-2xl w-full select-none transition-colors duration-300"
                       whileDrag={{ scale: 1.05, zIndex: 10 }}
                     >
                       <NodeCard
@@ -141,7 +141,7 @@ export const StackWorkspace: React.FC<StackWorkspaceProps> = ({
                         className="flex-shrink-0"
                       />
                       
-                      <span className="text-[9px] text-[#4c258d] font-mono font-bold uppercase select-none">
+                      <span className="text-[9px] text-[var(--text-muted)] font-mono font-bold uppercase select-none transition-colors duration-300">
                         {isTop ? 'TOP' : `[${elements.length - 1 - idx}]`}
                       </span>
                     </Reorder.Item>
@@ -155,4 +155,3 @@ export const StackWorkspace: React.FC<StackWorkspaceProps> = ({
     </div>
   );
 };
-

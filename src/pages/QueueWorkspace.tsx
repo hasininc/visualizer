@@ -29,20 +29,20 @@ export const QueueWorkspace: React.FC<QueueWorkspaceProps> = ({
   return (
     <div className="flex flex-col items-center justify-start gap-4 w-full py-2">
       {elements.length === 0 ? (
-        <div className="text-[#4c258d]/70 font-display font-medium text-sm select-none p-8 border border-dashed border-[#a38deb]/45 rounded-3xl">
+        <div className="text-[var(--text-muted)] font-display font-medium text-sm select-none p-8 border border-dashed border-[var(--empty-border)] rounded-3xl transition-colors duration-300">
           Queue empty. Enqueue elements in the left panel!
         </div>
       ) : (
         <div className="flex flex-col items-center w-full max-w-2xl">
           {/* Header instructions */}
-          <div className="text-center text-[10px] text-[#4c258d]/80 font-black tracking-widest uppercase mb-3 flex items-center justify-center gap-1">
+          <div className="text-center text-[10px] text-[var(--text-muted)] font-black tracking-widest uppercase mb-3 flex items-center justify-center gap-1 transition-colors duration-300">
             <ArrowLeft className="w-3.5 h-3.5" />
             <span>Drag elements to reorder • Double-click to edit</span>
             <ArrowLeft className="w-3.5 h-3.5" />
           </div>
 
           {/* Figma Auto-Layout Horizontal Queue pipeline */}
-          <div className="w-full border-y-4 border-dashed border-[#a38deb] py-8 bg-[#a28ceb]/10 relative flex items-center justify-center min-h-[140px] px-6">
+          <div className="w-full border-y-4 border-dashed border-[var(--canvas-border)] py-8 bg-[var(--canvas-bg)] relative flex items-center justify-center min-h-[140px] px-6 rounded-2xl transition-colors duration-300">
             <Reorder.Group
               axis="x"
               values={elements}
@@ -70,18 +70,18 @@ export const QueueWorkspace: React.FC<QueueWorkspaceProps> = ({
                     />
                     
                     {/* Index small tag */}
-                    <span className="text-[8px] text-[#4c258d] font-mono absolute bottom-1 right-2 select-none">
+                    <span className="text-[8px] text-[var(--text-muted)] font-mono absolute bottom-1 right-2 select-none transition-colors duration-300">
                       [{idx}]
                     </span>
 
                     {/* Pointer Banners */}
                     {isFront && (
-                      <div className="absolute -top-7 left-1/2 -translate-x-1/2 bg-[#4a238a] text-[#ece8ff] text-[8px] font-black tracking-widest px-2 py-0.5 rounded-full uppercase shadow-sm select-none">
+                      <div className="absolute -top-7 left-1/2 -translate-x-1/2 bg-[var(--pointer-banner-bg)] text-[var(--pointer-banner-text)] text-[8px] font-black tracking-widest px-2 py-0.5 rounded-full uppercase shadow-sm select-none transition-colors duration-300">
                         Front
                       </div>
                     )}
                     {isRear && !isFront && (
-                      <div className="absolute -top-7 left-1/2 -translate-x-1/2 bg-[#4c258d] text-[#ece8ff] text-[8px] font-black tracking-widest px-2 py-0.5 rounded-full uppercase shadow-sm select-none">
+                      <div className="absolute -top-7 left-1/2 -translate-x-1/2 bg-[var(--btn-primary-bg)] text-[var(--btn-primary-text)] text-[8px] font-black tracking-widest px-2 py-0.5 rounded-full uppercase shadow-sm select-none transition-colors duration-300">
                         Rear
                       </div>
                     )}

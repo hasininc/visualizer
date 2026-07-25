@@ -1,6 +1,7 @@
 import React from 'react';
 import { Cpu, HelpCircle } from 'lucide-react';
 import { Button } from './Button';
+import { ThemeToggle } from './ThemeToggle';
 
 interface NavbarProps {
   onOpenAboutModal: () => void;
@@ -8,30 +9,32 @@ interface NavbarProps {
 
 export const Navbar: React.FC<NavbarProps> = ({ onOpenAboutModal }) => {
   return (
-    <header className="sticky top-0 z-40 w-full glass-panel border-b border-[#a38deb] bg-[#bdabfc]/95 px-6 py-4">
+    <header className="sticky top-0 z-40 w-full glass-panel border-b border-[var(--panel-border)] bg-[var(--panel-bg-95)] px-6 py-4 backdrop-blur-md transition-colors duration-300">
       <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
         {/* Title and Logo */}
         <div className="flex items-center gap-3 select-none">
-          <div className="w-10 h-10 rounded-2xl bg-[#4c258d] flex items-center justify-center shadow-md">
+          <div className="w-10 h-10 rounded-2xl bg-[var(--btn-primary-bg)] flex items-center justify-center shadow-md transition-colors duration-300">
             <Cpu className="w-5.5 h-5.5 text-[#ece8ff]" />
           </div>
           <div className="flex flex-col">
-            <h1 className="text-xl font-black font-display tracking-wide text-[#250d4f] flex items-center gap-1.5 leading-none">
-              DSA <span className="text-[#4c258d] font-semibold">Visualizer</span>
+            <h1 className="text-xl font-black font-display tracking-wide text-[var(--text-main)] flex items-center gap-1.5 leading-none transition-colors duration-300">
+              DSA <span className="text-[var(--btn-primary-bg)] font-semibold transition-colors duration-300">Visualizer</span>
             </h1>
-            <p className="text-xs text-[#4c258d]/80 font-bold font-display mt-0.5">
+            <p className="text-xs text-[var(--text-muted)] font-bold font-display mt-0.5 transition-colors duration-300">
               Build and Understand Data Structures
             </p>
           </div>
         </div>
 
         {/* Action Controls */}
-        <div className="flex items-center gap-3.5">
+        <div className="flex items-center gap-3 sm:gap-4">
+          <ThemeToggle />
+
           <Button
             variant="secondary"
             onClick={onOpenAboutModal}
-            icon={<HelpCircle className="w-4 h-4 text-[#250d4f]" />}
-            className="px-4 py-1.5 rounded-xl border-[#947deb]"
+            icon={<HelpCircle className="w-4 h-4 text-current" />}
+            className="px-4 py-1.5 rounded-xl border-[var(--btn-secondary-border)]"
           >
             How it works
           </Button>
@@ -40,7 +43,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAboutModal }) => {
             href="https://github.com"
             target="_blank"
             rel="noreferrer"
-            className="text-[#250d4f] hover:text-[#4c258d] p-2 rounded-xl hover:bg-[#a28ceb]/30 transition-all border border-transparent hover:border-[#947deb]"
+            className="text-[var(--text-main)] hover:text-[var(--btn-primary-bg)] p-2 rounded-xl hover:bg-[var(--btn-ghost-hover)] transition-all border border-transparent hover:border-[var(--btn-secondary-border)]"
             title="GitHub Repository"
           >
             <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">

@@ -1,14 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 
-interface NodeCardProps {
-  value: string;
-  isSelected?: boolean;
-  onSelect?: () => void;
-  onEditValue?: (newValue: string) => void;
-  className?: string;
-  size?: 'sm' | 'md' | 'lg';
-}
 
 export const NodeCard: React.FC<NodeCardProps> = ({
   value,

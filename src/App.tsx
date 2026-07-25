@@ -343,6 +343,7 @@ function MainVisualizerApp() {
 
       if (selectedAlgo === 'bubble') {
         const arr = [...nums];
+        const trackedIds = elements.map((el) => el.id);
         const n = arr.length;
         const sortedIndices: number[] = [];
         steps.push({
@@ -350,6 +351,7 @@ function MainVisualizerApp() {
           swapped: [],
           sorted: [],
           arrayState: [...arr],
+          elementIds: [...trackedIds],
           description: 'Starting Bubble Sort iteration.',
         });
 
@@ -360,18 +362,24 @@ function MainVisualizerApp() {
               swapped: [],
               sorted: [...sortedIndices],
               arrayState: [...arr],
+              elementIds: [...trackedIds],
               description: `Comparing elements at index ${j} (${arr[j]}) and index ${j + 1} (${arr[j + 1]}).`,
             });
             if (arr[j] > arr[j + 1]) {
-              const temp = arr[j];
+              const tempVal = arr[j];
               arr[j] = arr[j + 1];
-              arr[j + 1] = temp;
+              arr[j + 1] = tempVal;
+
+              const tempId = trackedIds[j];
+              trackedIds[j] = trackedIds[j + 1];
+              trackedIds[j + 1] = tempId;
 
               steps.push({
                 compared: [j, j + 1],
                 swapped: [j, j + 1],
                 sorted: [...sortedIndices],
                 arrayState: [...arr],
+                elementIds: [...trackedIds],
                 description: `Swapped ${arr[j + 1]} and ${arr[j]} because ${arr[j + 1]} > ${arr[j]}.`,
               });
             }
@@ -384,10 +392,12 @@ function MainVisualizerApp() {
           swapped: [],
           sorted: Array.from({ length: n }, (_, i) => i),
           arrayState: [...arr],
+          elementIds: [...trackedIds],
           description: 'Bubble Sort completed! Array is fully sorted.',
         });
       } else if (selectedAlgo === 'selection') {
         const arr = [...nums];
+        const trackedIds = elements.map((el) => el.id);
         const n = arr.length;
         const sortedIndices: number[] = [];
         steps.push({
@@ -395,6 +405,7 @@ function MainVisualizerApp() {
           swapped: [],
           sorted: [],
           arrayState: [...arr],
+          elementIds: [...trackedIds],
           description: 'Starting Selection Sort.',
         });
 
@@ -406,6 +417,8 @@ function MainVisualizerApp() {
               swapped: [],
               sorted: [...sortedIndices],
               arrayState: [...arr],
+              elementIds: [...trackedIds],
+              minIdx,
               description: `Comparing element ${arr[j]} at index ${j} with current minimum ${arr[minIdx]} at index ${minIdx}.`,
             });
             if (arr[j] < arr[minIdx]) {
@@ -413,14 +426,21 @@ function MainVisualizerApp() {
             }
           }
           if (minIdx !== i) {
-            const temp = arr[i];
+            const tempVal = arr[i];
             arr[i] = arr[minIdx];
-            arr[minIdx] = temp;
+            arr[minIdx] = tempVal;
+
+            const tempId = trackedIds[i];
+            trackedIds[i] = trackedIds[minIdx];
+            trackedIds[minIdx] = tempId;
+
             steps.push({
               compared: [i, minIdx],
               swapped: [i, minIdx],
               sorted: [...sortedIndices],
               arrayState: [...arr],
+              elementIds: [...trackedIds],
+              minIdx: i,
               description: `Swapped minimum element ${arr[i]} into index ${i}.`,
             });
           }
@@ -432,27 +452,33 @@ function MainVisualizerApp() {
           swapped: [],
           sorted: Array.from({ length: n }, (_, i) => i),
           arrayState: [...arr],
+          elementIds: [...trackedIds],
           description: 'Selection Sort completed! Array is fully sorted.',
         });
       } else if (selectedAlgo === 'insertion') {
         const arr = [...nums];
+        const trackedIds = elements.map((el) => el.id);
         const n = arr.length;
         steps.push({
           compared: [],
           swapped: [],
           sorted: [0],
           arrayState: [...arr],
+          elementIds: [...trackedIds],
           description: 'Starting Insertion Sort. Index 0 is initially sorted.',
         });
 
         for (let i = 1; i < n; i++) {
           const key = arr[i];
+          const keyId = trackedIds[i];
           let j = i - 1;
           steps.push({
             compared: [i],
             swapped: [],
             sorted: Array.from({ length: i }, (_, k) => k),
             arrayState: [...arr],
+            elementIds: [...trackedIds],
+            keyIdx: i,
             description: `Inserting key ${key} at index ${i} into sorted sub-array.`,
           });
 
@@ -462,17 +488,23 @@ function MainVisualizerApp() {
               swapped: [j + 1],
               sorted: Array.from({ length: i }, (_, k) => k),
               arrayState: [...arr],
+              elementIds: [...trackedIds],
+              keyIdx: j + 1,
               description: `${arr[j]} > ${key}, shifting ${arr[j]} to index ${j + 1}.`,
             });
             arr[j + 1] = arr[j];
+            trackedIds[j + 1] = trackedIds[j];
             j--;
           }
           arr[j + 1] = key;
+          trackedIds[j + 1] = keyId;
           steps.push({
             compared: [j + 1],
             swapped: [j + 1],
             sorted: Array.from({ length: i + 1 }, (_, k) => k),
             arrayState: [...arr],
+            elementIds: [...trackedIds],
+            keyIdx: j + 1,
             description: `Placed key ${key} into position ${j + 1}.`,
           });
         }
@@ -482,16 +514,19 @@ function MainVisualizerApp() {
           swapped: [],
           sorted: Array.from({ length: n }, (_, i) => i),
           arrayState: [...arr],
+          elementIds: [...trackedIds],
           description: 'Insertion Sort completed! Array is fully sorted.',
         });
       } else if (selectedAlgo === 'quick') {
         const arr = [...nums];
+        const trackedIds = elements.map((el) => el.id);
         const n = arr.length;
         steps.push({
           compared: [],
           swapped: [],
           sorted: [],
           arrayState: [...arr],
+          elementIds: [...trackedIds],
           description: 'Starting Quick Sort algorithm (Pivot Partitioning).',
         });
 
@@ -503,6 +538,8 @@ function MainVisualizerApp() {
             swapped: [],
             sorted: [],
             arrayState: [...arr],
+            elementIds: [...trackedIds],
+            pivotIdx: high,
             description: `Choosing pivot ${pivot} at index ${high} for range [${low}..${high}].`,
           });
 
@@ -513,33 +550,49 @@ function MainVisualizerApp() {
               swapped: [],
               sorted: [],
               arrayState: [...arr],
+              elementIds: [...trackedIds],
+              pivotIdx: high,
               description: `Comparing element ${arr[j]} at index ${j} with pivot ${pivot}.`,
             });
             if (arr[j] < pivot) {
               i++;
               if (i !== j) {
-                const temp = arr[i];
+                const tempVal = arr[i];
                 arr[i] = arr[j];
-                arr[j] = temp;
+                arr[j] = tempVal;
+
+                const tempId = trackedIds[i];
+                trackedIds[i] = trackedIds[j];
+                trackedIds[j] = tempId;
+
                 steps.push({
                   compared: [i, j],
                   swapped: [i, j],
                   sorted: [],
                   arrayState: [...arr],
+                  elementIds: [...trackedIds],
+                  pivotIdx: high,
                   description: `Swapped ${arr[i]} at index ${i} and ${arr[j]} at index ${j}.`,
                 });
               }
             }
           }
-          const temp = arr[i + 1];
+          const tempVal = arr[i + 1];
           arr[i + 1] = arr[high];
-          arr[high] = temp;
+          arr[high] = tempVal;
+
+          const tempId = trackedIds[i + 1];
+          trackedIds[i + 1] = trackedIds[high];
+          trackedIds[high] = tempId;
+
           const pivotIdx = i + 1;
           steps.push({
             compared: [pivotIdx],
             swapped: [pivotIdx],
             sorted: [pivotIdx],
             arrayState: [...arr],
+            elementIds: [...trackedIds],
+            pivotIdx,
             description: `Placed pivot ${pivot} into its correct sorted position at index ${pivotIdx}.`,
           });
 
@@ -554,16 +607,19 @@ function MainVisualizerApp() {
           swapped: [],
           sorted: Array.from({ length: n }, (_, i) => i),
           arrayState: [...arr],
+          elementIds: [...trackedIds],
           description: 'Quick Sort completed! Array is fully sorted.',
         });
       } else if (selectedAlgo === 'merge') {
         const arr = [...nums];
+        const trackedIds = elements.map((el) => el.id);
         const n = arr.length;
         steps.push({
           compared: [],
           swapped: [],
           sorted: [],
           arrayState: [...arr],
+          elementIds: [...trackedIds],
           description: 'Starting Merge Sort algorithm (Divide & Conquer).',
         });
 
@@ -576,6 +632,7 @@ function MainVisualizerApp() {
             swapped: [],
             sorted: [],
             arrayState: [...arr],
+            elementIds: [...trackedIds],
             description: `Dividing segment [indices ${left}..${right}] into left half [${left}..${mid}] and right half [${mid + 1}..${right}].`,
           });
 
@@ -587,11 +644,14 @@ function MainVisualizerApp() {
             swapped: [],
             sorted: [],
             arrayState: [...arr],
+            elementIds: [...trackedIds],
             description: `Merging sorted sub-arrays [${left}..${mid}] and [${mid + 1}..${right}].`,
           });
 
           const leftArr = arr.slice(left, mid + 1);
           const rightArr = arr.slice(mid + 1, right + 1);
+          const leftIds = trackedIds.slice(left, mid + 1);
+          const rightIds = trackedIds.slice(mid + 1, right + 1);
           let i = 0, j = 0, k = left;
 
           while (i < leftArr.length && j < rightArr.length) {
@@ -602,26 +662,31 @@ function MainVisualizerApp() {
               swapped: [],
               sorted: [],
               arrayState: [...arr],
+              elementIds: [...trackedIds],
               description: `Comparing left element ${leftArr[i]} (idx ${idxLeft}) and right element ${rightArr[j]} (idx ${idxRight}).`,
             });
 
             if (leftArr[i] <= rightArr[j]) {
               arr[k] = leftArr[i];
+              trackedIds[k] = leftIds[i];
               steps.push({
                 compared: [k],
                 swapped: [k],
                 sorted: [],
                 arrayState: [...arr],
+                elementIds: [...trackedIds],
                 description: `Placing smaller element ${leftArr[i]} into index ${k}.`,
               });
               i++;
             } else {
               arr[k] = rightArr[j];
+              trackedIds[k] = rightIds[j];
               steps.push({
                 compared: [k],
                 swapped: [k],
                 sorted: [],
                 arrayState: [...arr],
+                elementIds: [...trackedIds],
                 description: `Placing smaller element ${rightArr[j]} into index ${k}.`,
               });
               j++;
@@ -631,11 +696,13 @@ function MainVisualizerApp() {
 
           while (i < leftArr.length) {
             arr[k] = leftArr[i];
+            trackedIds[k] = leftIds[i];
             steps.push({
               compared: [k],
               swapped: [k],
               sorted: [],
               arrayState: [...arr],
+              elementIds: [...trackedIds],
               description: `Placing remaining left element ${leftArr[i]} into index ${k}.`,
             });
             i++;
@@ -644,11 +711,13 @@ function MainVisualizerApp() {
 
           while (j < rightArr.length) {
             arr[k] = rightArr[j];
+            trackedIds[k] = rightIds[j];
             steps.push({
               compared: [k],
               swapped: [k],
               sorted: [],
               arrayState: [...arr],
+              elementIds: [...trackedIds],
               description: `Placing remaining right element ${rightArr[j]} into index ${k}.`,
             });
             j++;
@@ -663,6 +732,7 @@ function MainVisualizerApp() {
           swapped: [],
           sorted: Array.from({ length: n }, (_, i) => i),
           arrayState: [...arr],
+          elementIds: [...trackedIds],
           description: 'Merge Sort completed! Array is fully sorted.',
         });
       }

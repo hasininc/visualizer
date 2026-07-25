@@ -89,17 +89,7 @@ export const NodeCard: React.FC<NodeCardProps> = ({
       `}
     >
       {isEditing ? (
-        <input
-          ref={inputRef}
-          type="text"
-          maxLength={4}
-          value={editValue}
-          onChange={(e) => setEditValue(e.target.value)}
-          onBlur={handleSave}
-          onKeyDown={handleKeyDown}
-          onClick={(e) => e.stopPropagation()}
-          className="w-full h-full text-center bg-transparent outline-none text-[var(--input-text)] font-bold border-none p-0 focus:ring-0"
-        />
+     
       ) : (
         <span>{value}</span>
       )}

@@ -20,6 +20,7 @@ interface ArrayWorkspaceProps {
     compared: number[];
     swapped: number[];
     sorted: number[];
+    arrayState?: (string | number)[];
   } | null;
 }
 
@@ -54,6 +55,9 @@ export const ArrayWorkspace: React.FC<ArrayWorkspaceProps> = ({
                 const isCompared = visualizationData.compared.includes(idx);
                 const isSwapped = visualizationData.swapped.includes(idx);
                 const isSorted = visualizationData.sorted.includes(idx);
+                const displayVal = visualizationData.arrayState && visualizationData.arrayState[idx] !== undefined
+                  ? String(visualizationData.arrayState[idx])
+                  : el.value;
 
                 let cardClass = '';
                 if (isSwapped) {
@@ -66,7 +70,7 @@ export const ArrayWorkspace: React.FC<ArrayWorkspaceProps> = ({
 
                 return (
                   <motion.div
-                    key={el.id}
+                    key={el.id || `node-${idx}`}
                     layoutId={el.id}
                     transition={{ type: 'spring', stiffness: 300, damping: 25 }}
                     className="flex flex-col items-center gap-1.5 relative"
@@ -75,7 +79,7 @@ export const ArrayWorkspace: React.FC<ArrayWorkspaceProps> = ({
                       Index {idx}
                     </span>
                     <NodeCard
-                      value={el.value}
+                      value={displayVal}
                       className={cardClass}
                       onSelect={() => {}}
                     />

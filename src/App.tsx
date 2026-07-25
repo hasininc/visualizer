@@ -343,14 +343,15 @@ function MainVisualizerApp() {
 
       if (selectedAlgo === 'bubble') {
         const arr = [...nums];
+        const n = arr.length;
+        const sortedIndices: number[] = [];
         steps.push({
           compared: [],
           swapped: [],
           sorted: [],
+          arrayState: [...arr],
           description: 'Starting Bubble Sort iteration.',
         });
-        const n = arr.length;
-        const sortedIndices: number[] = [];
 
         for (let i = 0; i < n - 1; i++) {
           for (let j = 0; j < n - i - 1; j++) {
@@ -358,6 +359,7 @@ function MainVisualizerApp() {
               compared: [j, j + 1],
               swapped: [],
               sorted: [...sortedIndices],
+              arrayState: [...arr],
               description: `Comparing elements at index ${j} (${arr[j]}) and index ${j + 1} (${arr[j + 1]}).`,
             });
             if (arr[j] > arr[j + 1]) {
@@ -365,17 +367,12 @@ function MainVisualizerApp() {
               arr[j] = arr[j + 1];
               arr[j + 1] = temp;
 
-              // Swap corresponding elements in state
-              const updatedEls = [...elements];
-              const tempNode = updatedEls[j];
-              updatedEls[j] = updatedEls[j + 1];
-              updatedEls[j + 1] = tempNode;
-
               steps.push({
                 compared: [j, j + 1],
                 swapped: [j, j + 1],
                 sorted: [...sortedIndices],
-                description: `Swapping ${arr[j + 1]} and ${arr[j]} because ${arr[j + 1]} > ${arr[j]}.`,
+                arrayState: [...arr],
+                description: `Swapped ${arr[j + 1]} and ${arr[j]} because ${arr[j + 1]} > ${arr[j]}.`,
               });
             }
           }
@@ -386,7 +383,8 @@ function MainVisualizerApp() {
           compared: [],
           swapped: [],
           sorted: Array.from({ length: n }, (_, i) => i),
-          description: 'Array is fully sorted!',
+          arrayState: [...arr],
+          description: 'Bubble Sort completed! Array is fully sorted.',
         });
       } else if (selectedAlgo === 'selection') {
         const arr = [...nums];
@@ -396,6 +394,7 @@ function MainVisualizerApp() {
           compared: [],
           swapped: [],
           sorted: [],
+          arrayState: [...arr],
           description: 'Starting Selection Sort.',
         });
 
@@ -406,7 +405,8 @@ function MainVisualizerApp() {
               compared: [minIdx, j],
               swapped: [],
               sorted: [...sortedIndices],
-              description: `Checking if element ${arr[j]} at index ${j} is smaller than current minimum ${arr[minIdx]} at index ${minIdx}.`,
+              arrayState: [...arr],
+              description: `Comparing element ${arr[j]} at index ${j} with current minimum ${arr[minIdx]} at index ${minIdx}.`,
             });
             if (arr[j] < arr[minIdx]) {
               minIdx = j;
@@ -420,7 +420,8 @@ function MainVisualizerApp() {
               compared: [i, minIdx],
               swapped: [i, minIdx],
               sorted: [...sortedIndices],
-              description: `Swapping ${arr[minIdx]} at index ${i} with new minimum ${arr[i]}.`,
+              arrayState: [...arr],
+              description: `Swapped minimum element ${arr[i]} into index ${i}.`,
             });
           }
           sortedIndices.push(i);
@@ -430,21 +431,239 @@ function MainVisualizerApp() {
           compared: [],
           swapped: [],
           sorted: Array.from({ length: n }, (_, i) => i),
-          description: 'Array is fully sorted!',
+          arrayState: [...arr],
+          description: 'Selection Sort completed! Array is fully sorted.',
         });
-      } else {
-        // Fallback simple sort representation
-        steps.push({
-          compared: [0, 1],
-          swapped: [],
-          sorted: [],
-          description: 'Executing sorting algorithm steps.',
-        });
+      } else if (selectedAlgo === 'insertion') {
+        const arr = [...nums];
+        const n = arr.length;
         steps.push({
           compared: [],
           swapped: [],
-          sorted: Array.from({ length: elements.length }, (_, i) => i),
-          description: 'Completed algorithm visualization.',
+          sorted: [0],
+          arrayState: [...arr],
+          description: 'Starting Insertion Sort. Index 0 is initially sorted.',
+        });
+
+        for (let i = 1; i < n; i++) {
+          const key = arr[i];
+          let j = i - 1;
+          steps.push({
+            compared: [i],
+            swapped: [],
+            sorted: Array.from({ length: i }, (_, k) => k),
+            arrayState: [...arr],
+            description: `Inserting key ${key} at index ${i} into sorted sub-array.`,
+          });
+
+          while (j >= 0 && arr[j] > key) {
+            steps.push({
+              compared: [j, j + 1],
+              swapped: [j + 1],
+              sorted: Array.from({ length: i }, (_, k) => k),
+              arrayState: [...arr],
+              description: `${arr[j]} > ${key}, shifting ${arr[j]} to index ${j + 1}.`,
+            });
+            arr[j + 1] = arr[j];
+            j--;
+          }
+          arr[j + 1] = key;
+          steps.push({
+            compared: [j + 1],
+            swapped: [j + 1],
+            sorted: Array.from({ length: i + 1 }, (_, k) => k),
+            arrayState: [...arr],
+            description: `Placed key ${key} into position ${j + 1}.`,
+          });
+        }
+
+        steps.push({
+          compared: [],
+          swapped: [],
+          sorted: Array.from({ length: n }, (_, i) => i),
+          arrayState: [...arr],
+          description: 'Insertion Sort completed! Array is fully sorted.',
+        });
+      } else if (selectedAlgo === 'quick') {
+        const arr = [...nums];
+        const n = arr.length;
+        steps.push({
+          compared: [],
+          swapped: [],
+          sorted: [],
+          arrayState: [...arr],
+          description: 'Starting Quick Sort algorithm (Pivot Partitioning).',
+        });
+
+        const quickSortRecursive = (low: number, high: number) => {
+          if (low >= high) return;
+          const pivot = arr[high];
+          steps.push({
+            compared: [high],
+            swapped: [],
+            sorted: [],
+            arrayState: [...arr],
+            description: `Choosing pivot ${pivot} at index ${high} for range [${low}..${high}].`,
+          });
+
+          let i = low - 1;
+          for (let j = low; j < high; j++) {
+            steps.push({
+              compared: [j, high],
+              swapped: [],
+              sorted: [],
+              arrayState: [...arr],
+              description: `Comparing element ${arr[j]} at index ${j} with pivot ${pivot}.`,
+            });
+            if (arr[j] < pivot) {
+              i++;
+              if (i !== j) {
+                const temp = arr[i];
+                arr[i] = arr[j];
+                arr[j] = temp;
+                steps.push({
+                  compared: [i, j],
+                  swapped: [i, j],
+                  sorted: [],
+                  arrayState: [...arr],
+                  description: `Swapped ${arr[i]} at index ${i} and ${arr[j]} at index ${j}.`,
+                });
+              }
+            }
+          }
+          const temp = arr[i + 1];
+          arr[i + 1] = arr[high];
+          arr[high] = temp;
+          const pivotIdx = i + 1;
+          steps.push({
+            compared: [pivotIdx],
+            swapped: [pivotIdx],
+            sorted: [pivotIdx],
+            arrayState: [...arr],
+            description: `Placed pivot ${pivot} into its correct sorted position at index ${pivotIdx}.`,
+          });
+
+          quickSortRecursive(low, pivotIdx - 1);
+          quickSortRecursive(pivotIdx + 1, high);
+        };
+
+        quickSortRecursive(0, n - 1);
+
+        steps.push({
+          compared: [],
+          swapped: [],
+          sorted: Array.from({ length: n }, (_, i) => i),
+          arrayState: [...arr],
+          description: 'Quick Sort completed! Array is fully sorted.',
+        });
+      } else if (selectedAlgo === 'merge') {
+        const arr = [...nums];
+        const n = arr.length;
+        steps.push({
+          compared: [],
+          swapped: [],
+          sorted: [],
+          arrayState: [...arr],
+          description: 'Starting Merge Sort algorithm (Divide & Conquer).',
+        });
+
+        const mergeSortRecursive = (left: number, right: number) => {
+          if (left >= right) return;
+          const mid = Math.floor((left + right) / 2);
+
+          steps.push({
+            compared: Array.from({ length: right - left + 1 }, (_, i) => left + i),
+            swapped: [],
+            sorted: [],
+            arrayState: [...arr],
+            description: `Dividing segment [indices ${left}..${right}] into left half [${left}..${mid}] and right half [${mid + 1}..${right}].`,
+          });
+
+          mergeSortRecursive(left, mid);
+          mergeSortRecursive(mid + 1, right);
+
+          steps.push({
+            compared: Array.from({ length: right - left + 1 }, (_, i) => left + i),
+            swapped: [],
+            sorted: [],
+            arrayState: [...arr],
+            description: `Merging sorted sub-arrays [${left}..${mid}] and [${mid + 1}..${right}].`,
+          });
+
+          const leftArr = arr.slice(left, mid + 1);
+          const rightArr = arr.slice(mid + 1, right + 1);
+          let i = 0, j = 0, k = left;
+
+          while (i < leftArr.length && j < rightArr.length) {
+            const idxLeft = left + i;
+            const idxRight = mid + 1 + j;
+            steps.push({
+              compared: [idxLeft, idxRight],
+              swapped: [],
+              sorted: [],
+              arrayState: [...arr],
+              description: `Comparing left element ${leftArr[i]} (idx ${idxLeft}) and right element ${rightArr[j]} (idx ${idxRight}).`,
+            });
+
+            if (leftArr[i] <= rightArr[j]) {
+              arr[k] = leftArr[i];
+              steps.push({
+                compared: [k],
+                swapped: [k],
+                sorted: [],
+                arrayState: [...arr],
+                description: `Placing smaller element ${leftArr[i]} into index ${k}.`,
+              });
+              i++;
+            } else {
+              arr[k] = rightArr[j];
+              steps.push({
+                compared: [k],
+                swapped: [k],
+                sorted: [],
+                arrayState: [...arr],
+                description: `Placing smaller element ${rightArr[j]} into index ${k}.`,
+              });
+              j++;
+            }
+            k++;
+          }
+
+          while (i < leftArr.length) {
+            arr[k] = leftArr[i];
+            steps.push({
+              compared: [k],
+              swapped: [k],
+              sorted: [],
+              arrayState: [...arr],
+              description: `Placing remaining left element ${leftArr[i]} into index ${k}.`,
+            });
+            i++;
+            k++;
+          }
+
+          while (j < rightArr.length) {
+            arr[k] = rightArr[j];
+            steps.push({
+              compared: [k],
+              swapped: [k],
+              sorted: [],
+              arrayState: [...arr],
+              description: `Placing remaining right element ${rightArr[j]} into index ${k}.`,
+            });
+            j++;
+            k++;
+          }
+        };
+
+        mergeSortRecursive(0, n - 1);
+
+        steps.push({
+          compared: [],
+          swapped: [],
+          sorted: Array.from({ length: n }, (_, i) => i),
+          arrayState: [...arr],
+          description: 'Merge Sort completed! Array is fully sorted.',
         });
       }
 
@@ -880,6 +1099,7 @@ function MainVisualizerApp() {
                       <option value="selection" className="bg-[var(--panel-bg)] text-[var(--text-main)]">Selection Sort</option>
                       <option value="insertion" className="bg-[var(--panel-bg)] text-[var(--text-main)]">Insertion Sort</option>
                       <option value="quick" className="bg-[var(--panel-bg)] text-[var(--text-main)]">Quick Sort</option>
+                      <option value="merge" className="bg-[var(--panel-bg)] text-[var(--text-main)]">Merge Sort</option>
                     </select>
                   </div>
                   <Button

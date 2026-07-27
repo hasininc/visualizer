@@ -54,49 +54,7 @@
 }
 
 /* Dark Theme Variables (Obsidian-Violet High Contrast) */
-html.dark {
-  --bg-main: #0c0915;
-  --text-main: #f3f0ff;
-  --text-muted: #c4b5fd;
-  --text-subtle: #a78bfa;
-  --panel-bg: #161226;
-  --panel-bg-95: rgba(22, 18, 38, 0.95);
-  --panel-glow-bg: #221b3a;
-  --panel-border: #382c54;
-  --panel-border-glow: #8b5cf6;
-  --input-bg: #211a36;
-  --input-border: #4a3b6e;
-  --input-text: #f3f0ff;
-  --input-placeholder: #8b7ab8;
-  --btn-primary-bg: #7c3aed;
-  --btn-primary-text: #ffffff;
-  --btn-primary-hover: #6d28d9;
-  --btn-secondary-bg: #2d234a;
-  --btn-secondary-text: #e9d5ff;
-  --btn-secondary-border: #52407d;
-  --btn-secondary-hover: #3c2f63;
-  --btn-ghost-text: #e9d5ff;
-  --btn-ghost-hover: rgba(76, 58, 126, 0.5);
-  --node-bg: #261f3d;
-  --node-border: #4c3b7a;
-  --node-border-hover: #a78bfa;
-  --node-text: #f3f0ff;
-  --node-selected-bg: #7c3aed;
-  --node-selected-border: #8b5cf6;
-  --node-selected-text: #ffffff;
-  --node-editing-bg: #211a36;
-  --canvas-bg: rgba(26, 20, 44, 0.6);
-  --canvas-border: rgba(82, 64, 125, 0.6);
-  --grid-line: #221a36;
-  --canvas-grid-line: rgba(167, 139, 250, 0.12);
-  --link-stroke: #a78bfa;
-  --scrollbar-track: #161226;
-  --scrollbar-thumb: #382c54;
-  --scrollbar-thumb-hover: #52407d;
-  --ambient-light-1: rgba(124, 58, 237, 0.15);
-  --ambient-light-2: rgba(167, 139, 250, 0.1);
-  --empty-border: rgba(82, 64, 125, 0.6);
-}
+
 
 /* Custom Base resets */
 html, body, #root {
